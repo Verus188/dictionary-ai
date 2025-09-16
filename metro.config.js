@@ -5,7 +5,11 @@ const { withNativeWind } = require("nativewind/metro");
 const config = getDefaultConfig(__dirname);
 
 const nativewindPath = path.dirname(require.resolve("nativewind/package.json"));
-const cssInteropPath = path.resolve(nativewindPath, "..", "react-native-css-interop");
+const cssInteropPath = path.resolve(
+  nativewindPath,
+  "..",
+  "react-native-css-interop"
+);
 
 config.resolver = {
   ...(config.resolver ?? {}),
@@ -15,4 +19,4 @@ config.resolver = {
   },
 };
 
-module.exports = withNativeWind(config, { input: "./src/app/global.css" });
+module.exports = withNativeWind(config, { input: "./src/global.css" });
