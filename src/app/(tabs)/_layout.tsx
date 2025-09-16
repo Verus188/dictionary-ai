@@ -11,26 +11,14 @@ export default function TabLayout() {
         },
         headerStyle: {
           backgroundColor: "var(--tabs-bg)",
-          borderBottomColor: "var(--tabs-bg)",
+          borderBottomColor: "var(--tabs-border-color)",
         },
         headerTitleStyle: {
           color: "var(--text-color)",
         },
+        headerShadowVisible: false,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home-sharp" : "home-outline"}
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="dictionary"
         options={{
@@ -38,6 +26,21 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "book-sharp" : "book-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="story"
+        options={{
+          title: "Story",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={
+                focused ? "game-controller-sharp" : "game-controller-outline"
+              }
               color={color}
               size={24}
             />
