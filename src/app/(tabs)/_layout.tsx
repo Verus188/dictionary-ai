@@ -1,20 +1,22 @@
+import { getColor } from "@/src/helpers/twColors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import "../../global.css";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "var(--tabs-bg)",
-          borderColor: "var(--tabs-border-color)",
+          backgroundColor: getColor("tabs-bg"),
+          borderColor: getColor("tabs-border-color"),
         },
         headerStyle: {
-          backgroundColor: "var(--tabs-bg)",
-          borderBottomColor: "var(--tabs-border-color)",
+          backgroundColor: getColor("tabs-bg"),
+          borderBottomColor: getColor("tabs-border-color"),
         },
         headerTitleStyle: {
-          color: "var(--text-color)",
+          color: getColor("text-color"),
         },
         headerShadowVisible: false,
       }}
