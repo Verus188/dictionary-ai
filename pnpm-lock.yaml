@@ -20,6 +20,15 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.8
         version: 7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
+      '@reatom/core':
+        specifier: ^3.10.1
+        version: 3.10.1
+      '@reatom/framework':
+        specifier: ^3.4.64
+        version: 3.4.64
+      '@reatom/npm-react':
+        specifier: ^3.10.6
+        version: 3.10.6(react@19.1.0)
       expo:
         specifier: ~54.0.7
         version: 54.0.7(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
@@ -1232,6 +1241,38 @@ packages:
 
   '@react-navigation/routers@7.5.1':
     resolution: {integrity: sha512-pxipMW/iEBSUrjxz2cDD7fNwkqR4xoi0E/PcfTQGCcdJwLoaxzab5kSadBLj1MTJyT0YRrOXL9umHpXtp+Dv4w==}
+
+  '@reatom/async@3.16.8':
+    resolution: {integrity: sha512-9x+mPFZMbAtEpLsnF4s0dVQE2e1K0/lE8DA8F9OeDwFzdZqQhQLpirbfGEh+NYHOVdYk9Yj6lhm6O7TBLGHnKg==}
+
+  '@reatom/core@3.10.1':
+    resolution: {integrity: sha512-A5vx+akCGkc+YCYhqPaAnR46uvqe70pQ2JB82JCLgOrj+YmnStIGkiaiWG43wn30qUjatXjejJmGkqQbjtri+A==}
+
+  '@reatom/effects@3.11.3':
+    resolution: {integrity: sha512-0qxr7m6e+GrOvt0pESONl4aRZxGjsU1HWXIsDR2Ghw0mNGjuStnEDUZnO+MVbKOArMIAvZ8ZoMrQWqXEBfOrVg==}
+
+  '@reatom/framework@3.4.64':
+    resolution: {integrity: sha512-ev0CLSBk9eAr7+sdw5NJg2Dax8RXFitGoDbBag0suYYIb6x91sHCdsDFV4PTWGnXEvwX3+KYmREsVZuUO6lFGA==}
+
+  '@reatom/hooks@3.6.1':
+    resolution: {integrity: sha512-1q8qXAOkQlDKc/Y94alPHWqMnXvJhCG4Rr9hQxPMPG1Qf3WpeKm7Zdxs4v3DC2Kcw6oG6djVk3i5duIjPygGWA==}
+
+  '@reatom/lens@3.12.0':
+    resolution: {integrity: sha512-YsEnYYHi58ePDscXomnbDPC9NSggfJQHvhcpqEAmvZuHH4nbsUpoQj2W69nSQyUDH/+X+TxURvsGUOHaXMl9pQ==}
+
+  '@reatom/logger@3.8.4':
+    resolution: {integrity: sha512-MOz8Td1eZV+kU4QpkZXAdO9qFtGjqpm40crIlMNweDtOH7GgUmV2oKgOXRORQzYbeGHVMlQHG4J5iPeEQdM7KA==}
+
+  '@reatom/npm-react@3.10.6':
+    resolution: {integrity: sha512-lyoJD+pF2/P6B5bzSYjUQCzUSa0zkUQNAm1Lj8VXmVbILuiWid+n/9o/fJa8eEyH+w6KaFRunz1WZcOg/NW91g==}
+    peerDependencies:
+      react: '>=16.8.0'
+
+  '@reatom/primitives@3.11.0':
+    resolution: {integrity: sha512-b+jtK7qpQxSP83mYQXpPRMlFyg+C9WPv4sZDWSmm00mwmwetW0KbltftkWiwQjQM1TLwpDLZ6R7DX7fcTraIgg==}
+
+  '@reatom/utils@3.11.3':
+    resolution: {integrity: sha512-H2FQf9xra7Twf0PxS6L0DtuRRC79NfHRB3V/YhnhPHyUE/UFscXrin/I2eGj3FEKcgOfC2BWnzCOrkXjKWgECQ==}
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -6006,6 +6047,67 @@ snapshots:
   '@react-navigation/routers@7.5.1':
     dependencies:
       nanoid: 3.3.11
+
+  '@reatom/async@3.16.8':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/effects': 3.11.3
+      '@reatom/hooks': 3.6.1
+      '@reatom/primitives': 3.11.0
+      '@reatom/utils': 3.11.3
+
+  '@reatom/core@3.10.1': {}
+
+  '@reatom/effects@3.11.3':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/utils': 3.11.3
+
+  '@reatom/framework@3.4.64':
+    dependencies:
+      '@reatom/async': 3.16.8
+      '@reatom/core': 3.10.1
+      '@reatom/effects': 3.11.3
+      '@reatom/hooks': 3.6.1
+      '@reatom/lens': 3.12.0
+      '@reatom/logger': 3.8.4
+      '@reatom/primitives': 3.11.0
+      '@reatom/utils': 3.11.3
+
+  '@reatom/hooks@3.6.1':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/effects': 3.11.3
+      '@reatom/utils': 3.11.3
+
+  '@reatom/lens@3.12.0':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/effects': 3.11.3
+      '@reatom/hooks': 3.6.1
+      '@reatom/primitives': 3.11.0
+      '@reatom/utils': 3.11.3
+
+  '@reatom/logger@3.8.4':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/utils': 3.11.3
+
+  '@reatom/npm-react@3.10.6(react@19.1.0)':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/effects': 3.11.3
+      '@reatom/lens': 3.12.0
+      '@reatom/utils': 3.11.3
+      react: 19.1.0
+      use-sync-external-store: 1.5.0(react@19.1.0)
+
+  '@reatom/primitives@3.11.0':
+    dependencies:
+      '@reatom/core': 3.10.1
+      '@reatom/utils': 3.11.3
+
+  '@reatom/utils@3.11.3': {}
 
   '@rtsao/scc@1.1.0': {}
 
