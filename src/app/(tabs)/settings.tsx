@@ -1,26 +1,42 @@
 import { Button } from "@/src/components/button";
-import { openRouterTokenAtom } from "@/src/model/atoms";
+import { openRouterAIModelAtom, openRouterTokenAtom } from "@/src/model/atoms";
+import { Picker } from '@react-native-picker/picker';
 import { reatomComponent } from "@reatom/npm-react";
 import { useState } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
 const SettingsScreen = reatomComponent(({ ctx }) => {
-  const [inputText, setInputText] = useState("");
+  const [openRouterToken, setOpenRouterToken] = useState("");
   const token = ctx.spy(openRouterTokenAtom);
+  console.log(ctx.spy(openRouterAIModelAtom));
+  
 
   return (
     <ScrollView className="bg-main-bg p-4">
+      <View className="flex flex-col gap-8">
       <View className="flex gap-2">
         <Text className="text-lg text-text-color">OpenRouter token</Text>
         <TextInput
           className={`border border-text-color rounded ${
-            token === inputText ? "text-blue-400" : "text-text-color"
+            token === openRouterToken ? "text-blue-400" : "text-text-color"
           } py-1 px-1`}
-          onChangeText={setInputText}
+          onChangeText={setOpenRouterToken}
         />
-        <Button onPress={() => openRouterTokenAtom(ctx, inputText)}>
+        <Button onPress={() => openRouterTokenAtom(ctx, openRouterToken)}>
           <Text className="text-text-color">Set</Text>
         </Button>
+      </View>
+
+      <View className="flex gap-2">
+        <Text className="text-lg text-text-color">OpenRouter AI model</Text>
+        <Picker<string> onValueChange={value => openRouterAIModelAtom(ctx, value)} style={{ color: "white", backgroundColor: "transparent", borderColor: "white", borderWidth: 1, borderRadius: 4, padding: 4 }}>
+              <Picker.Item label="DeepSeek: DeepSeek V3.1 (free)" value="deepseek/deepseek-chat-v3.1:free" />
+              <Picker.Item label="Mistral: Mistral Small 3.2 24B (free)" value="mistralai/mistral-small-3.2-24b-instruct:free" />
+              <Picker.Item label="NVIDIA: Nemotron Nano 9B V2 (free)" value="nvidia/nemotron-nano-9b-v2:free" />
+              <Picker.Item label="Sonoma Sky Alpha" value="openrouter/sonoma-sky-alpha" />
+              <Picker.Item label="Google: Gemma 3n 2B (free)" value="google/gemma-3n-e2b-it:free" />
+        </Picker>
+      </View>
       </View>
     </ScrollView>
   );
