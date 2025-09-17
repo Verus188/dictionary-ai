@@ -1,5 +1,5 @@
 import { getColor } from "@/src/helpers/twColors";
-import { dictionaryCardsAtom } from "@/src/model/atoms";
+import { isCardModalVisibleAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
 import { Tabs } from "expo-router";
@@ -32,7 +32,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
             <Pressable
               className="px-4"
               onPress={() => {
-                dictionaryCardsAtom(ctx, (cards) => [...cards, "card"]);
+                isCardModalVisibleAtom(ctx, true);
               }}
             >
               <Text className="text-blue-500 capitalize">add</Text>
