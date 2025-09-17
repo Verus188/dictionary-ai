@@ -1,9 +1,12 @@
 import { getColor } from "@/src/helpers/twColors";
+import { dictionaryCardsAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { reatomComponent } from "@reatom/npm-react";
 import { Tabs } from "expo-router";
+import { Pressable, Text } from "react-native";
 import "../../global.css";
 
-export default function TabLayout() {
+const TabLayout = reatomComponent(({ ctx }) => {
   return (
     <Tabs
       screenOptions={{
@@ -25,6 +28,16 @@ export default function TabLayout() {
         name="dictionary"
         options={{
           title: "Dictionary",
+          headerRight: () => (
+            <Pressable
+              className="px-4"
+              onPress={() => {
+                dictionaryCardsAtom(ctx, (cards) => [...cards, "card"]);
+              }}
+            >
+              <Text className="text-blue-500 capitalize">add</Text>
+            </Pressable>
+          ),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "book-sharp" : "book-outline"}
@@ -51,4 +64,6 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+});
+
+export default TabLayout;

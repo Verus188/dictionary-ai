@@ -1,7 +1,9 @@
 import { DictionaryCard } from "@/src/components/dictionary-card";
+import { getColor } from "@/src/helpers/twColors";
 import { dictionaryCardsAtom } from "@/src/model/atoms";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
-import { Button, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 const DictionaryScreen = reatomComponent(({ ctx }) => {
   const cards = ctx.spy(dictionaryCardsAtom);
@@ -9,36 +11,33 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
   if (cards.length <= 0) {
     return (
       <View className="flex flex-col h-full gap-4 items-center justify-center bg-main-bg">
-        <Text className="text-xl font-semibold text-blue-400">Empty</Text>
-        <Button
-          title="Add card"
-          onPress={() => {
-            console.log(cards);
-
-            dictionaryCardsAtom(ctx, (cards) => [...cards, "card"]);
-          }}
+        <Ionicons
+          name="search-outline"
+          size={100}
+          color={getColor("text-blue-400")}
         />
+        <Text className="text-xl font-semibold text-blue-400">Empty</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex flex-col py-4 px-4 h-full gap-4 bg-main-bg overflow-y-auto">
-      {cards.map((card, index) => (
-        <DictionaryCard
-          key={`${card}-${index + 1}`}
-          card={`${card}-${index + 1}`}
-        />
-      ))}
-      <Button
-        title="Add card"
-        onPress={() => {
-          console.log(cards);
-
-          dictionaryCardsAtom(ctx, (cards) => [...cards, "card"]);
-        }}
-      />
-    </View>
+    <ScrollView
+      className="flex-1 bg-main-bg"
+      contentContainerStyle={{
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+      }}
+    >
+      <View className="flex flex-col gap-4">
+        {cards.map((card, index) => (
+          <DictionaryCard
+            key={`${card}-${index + 1}`}
+            card={`${card}-${index + 1}`}
+          />
+        ))}
+      </View>
+    </ScrollView>
   );
 });
 
