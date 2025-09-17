@@ -1,8 +1,12 @@
 import { atom, createCtx } from "@reatom/core";
+import { DictionaryCard } from "../types";
 
 export const reatomCtx = createCtx();
 
-export const dictionaryCardsAtom = atom<string[]>([], "dictionaryCardsAtom");
+export const dictionaryCardsAtom = atom<DictionaryCard[]>(
+  [],
+  "dictionaryCardsAtom"
+);
 
 export const isCardModalVisibleAtom = atom<boolean>(
   false,
