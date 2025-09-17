@@ -50,6 +50,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
       <Tabs.Screen
         name="story"
         options={{
+          headerShown: true,
           title: "Story",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons

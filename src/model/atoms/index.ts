@@ -12,3 +12,5 @@ export const isCardModalVisibleAtom = atom<boolean>(
   false,
   "isCardModalVisibleAtom"
 );
+
+export const openRouterTokenAtom = atom<string>("", "openRouterTokenAtom");
