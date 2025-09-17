@@ -1,4 +1,4 @@
-const nativewind = require("nativewind/preset");
+import nativewind from "nativewind/preset";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
