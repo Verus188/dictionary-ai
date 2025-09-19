@@ -3,8 +3,9 @@ export type DictionaryCard = {
   id: string;
 };
 
-export type storyInfo = {
+export type StoryInfo = {
   story: string;
+  continuation: string;
   firstAction: string;
   secondAction: string;
 };

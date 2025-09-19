@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/button";
-import { AIController, setAIController } from "@/src/helpers/AIController";
+import { AIController, setAIController } from "@/src/enteties/AIController";
 import { openRouterAIModelAtom, openRouterTokenAtom } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
