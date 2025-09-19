@@ -1,12 +1,15 @@
+import { SpinningIcon } from "@/src/components/spinning-icon";
 import { getColor } from "@/src/helpers/twColors";
-import { isCardModalVisibleAtom } from "@/src/model/atoms";
+import { isCardModalVisibleAtom, isStoryLoadingAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
 import { Tabs } from "expo-router";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import "../../global.css";
 
 const TabLayout = reatomComponent(({ ctx }) => {
+  const isStoryLoading = ctx.spy(isStoryLoadingAtom);
+
   return (
     <Tabs
       screenOptions={{
@@ -52,6 +55,15 @@ const TabLayout = reatomComponent(({ ctx }) => {
         options={{
           headerShown: true,
           title: "Story",
+          headerRight: () => {
+            if (isStoryLoading) {
+              return (
+                <View className="flex justify-center items-center px-4">
+                  <SpinningIcon />
+                </View>
+              );
+            }
+          },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={

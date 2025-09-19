@@ -29,3 +29,5 @@ export const educationLanguageAtom = atom<string>(
   "English",
   "educationLanguageAtom"
 );
+
+export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");

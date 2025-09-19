@@ -1,12 +1,15 @@
 import { Button } from "@/src/components/button";
 import { doStoryAction } from "@/src/helpers/doStoryAction";
-import { educationLanguageAtom, storyInfoAtom } from "@/src/model/atoms";
+import {
+  educationLanguageAtom,
+  isStoryLoadingAtom,
+  storyInfoAtom,
+} from "@/src/model/atoms";
 import { reatomComponent } from "@reatom/npm-react";
-import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
-  const [isStoryLoading, setIsStoryLoading] = useState(false);
+  const isStoryLoading = ctx.spy(isStoryLoadingAtom);
   const storyInfo = ctx.spy(storyInfoAtom);
   const language = ctx.spy(educationLanguageAtom);
   if (!storyInfo) {
@@ -27,13 +30,13 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       <View className="flex flex-1 w-full flex-row gap-4 justify-between">
         <Button
           onPress={() => {
-            setIsStoryLoading(true);
+            isStoryLoadingAtom(ctx, true);
             doStoryAction(story, firstAction, undefined, undefined, language)
               .then((storyInfo) => {
                 storyInfoAtom(ctx, storyInfo);
               })
               .finally(() => {
-                setIsStoryLoading(false);
+                isStoryLoadingAtom(ctx, false);
               });
           }}
           className={`flex-1 h-full ${
@@ -46,15 +49,13 @@ const StoryScreen = reatomComponent(({ ctx }) => {
         </Button>
         <Button
           onPress={() => {
-            console.log(123);
-
-            setIsStoryLoading(true);
+            isStoryLoadingAtom(ctx, true);
             doStoryAction(story, secondAction, undefined, undefined, language)
               .then((storyInfo) => {
                 storyInfoAtom(ctx, storyInfo);
               })
               .finally(() => {
-                setIsStoryLoading(false);
+                isStoryLoadingAtom(ctx, false);
               });
           }}
           className={`flex-1 h-full ${

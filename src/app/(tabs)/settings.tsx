@@ -107,7 +107,6 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           >
             <Picker.Item label="English" value="English" />
             <Picker.Item label="Hindi" value="Hindi" />
-            {/* испанский почему то не работает */}
             <Picker.Item label="Spanish" value="Spanish" />
             <Picker.Item label="French" value="French" />
             <Picker.Item label="Arabic" value="Arabic" />
