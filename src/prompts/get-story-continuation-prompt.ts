@@ -23,6 +23,16 @@ export const getStoryContinuationPrompt = (
     ? `The continuation of the story should be about ${continuationSize} characters.`
     : "";
 
+  const languageDifficultyPrompt = languageDifficulty
+    ? `Use the language complexity level = ${languageDifficulty}, where 1 is the simplest and 6 is the most complex.
+	1.	Very simple language — short sentences, basic words, minimal descriptions (suitable for children).
+	2.	Simple language — slightly longer sentences, easy vocabulary, simple imagery.
+	3.	Intermediate level — everyday conversational style, clear language, a moderate amount of detail.
+	4.	Advanced level — more complex sentences, diverse vocabulary, metaphors and descriptions.
+	5.	Complex level — rich literary language, rare words, long sentences, sophisticated structures.
+	6.	Very complex language — almost academic style, high density of metaphors and literary devices, abundance of details.`
+    : "";
+
   return [
     story,
     action,
@@ -30,6 +40,6 @@ export const getStoryContinuationPrompt = (
     continuationSizePrompt,
     mood,
     languagePrompt,
-    languageDifficulty,
+    languageDifficultyPrompt,
   ].join("\n");
 };

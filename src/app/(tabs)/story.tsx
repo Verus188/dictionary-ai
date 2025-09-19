@@ -5,6 +5,7 @@ import {
   isStoryLoadingAtom,
   storyContinuationLengthAtom,
   storyInfoAtom,
+  storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
 import { reatomComponent } from "@reatom/npm-react";
 import { ScrollView, Text, View } from "react-native";
@@ -27,7 +28,8 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       action,
       ctx.get(storyContinuationLengthAtom),
       undefined,
-      ctx.get(educationLanguageAtom)
+      ctx.get(educationLanguageAtom),
+      ctx.get(storyLanguageDifficultyAtom)
     )
       .then((storyInfo) => {
         storyInfoAtom(ctx, storyInfo);

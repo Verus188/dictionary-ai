@@ -36,3 +36,8 @@ export const storyContinuationLengthAtom = atom<string>(
   "800",
   "storyContinuationLengthAtom"
 );
+
+export const storyLanguageDifficultyAtom = atom<string>(
+  "3",
+  "storyLanguageDifficultyAtom"
+);

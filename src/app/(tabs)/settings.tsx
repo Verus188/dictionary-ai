@@ -5,6 +5,7 @@ import {
   openRouterAIModelAtom,
   openRouterTokenAtom,
   storyContinuationLengthAtom,
+  storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
@@ -131,6 +132,33 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
             <Picker.Item label="Kazakh" value="Kazakh" />
             <Picker.Item label="Ukrainian" value="Ukrainian" />
             <Picker.Item label="Polish" value="Polish" />
+          </Picker>
+        </View>
+
+        <View className="flex gap-2">
+          <Text className="text-lg text-text-color">
+            Сложность языка истории
+          </Text>
+          <Picker<string>
+            selectedValue={ctx.spy(storyLanguageDifficultyAtom)}
+            onValueChange={(value) => {
+              storyLanguageDifficultyAtom(ctx, value);
+            }}
+            style={{
+              color: "white",
+              backgroundColor: "transparent",
+              borderColor: "white",
+              borderWidth: 1,
+              borderRadius: 4,
+              padding: 4,
+            }}
+          >
+            <Picker.Item label="Очень простая" value="1" />
+            <Picker.Item label="Простая" value="2" />
+            <Picker.Item label="Срядняя" value="3" />
+            <Picker.Item label="Продвинутая" value="4" />
+            <Picker.Item label="Сложная" value="5" />
+            <Picker.Item label="Очень сложная" value="6" />
           </Picker>
         </View>
       </View>
