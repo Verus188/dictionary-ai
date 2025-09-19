@@ -19,7 +19,7 @@ export const openRouterTokenAtom = atom<string | null>(
   "openRouterTokenAtom"
 );
 export const openRouterAIModelAtom = atom<string | null>(
-  null,
+  "gemeni",
   "openRouterAIModelAtom"
 );
 // хранит всю истории и промпт сюжета

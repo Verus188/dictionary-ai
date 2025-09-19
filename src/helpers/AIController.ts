@@ -51,13 +51,6 @@ class GemeniAIController implements AIInterface {
   });
 
   async generateAIText(prompt: string) {
-    const apiKey = ctx.get(openRouterTokenAtom);
-    const AIModel = ctx.get(openRouterAIModelAtom);
-
-    if (!apiKey || !AIModel) {
-      return "";
-    }
-
     //параметры запроса, если нет json файла
     const defaulParameters = {
       model: "gemini-2.5-flash",
@@ -76,14 +69,13 @@ class GemeniAIController implements AIInterface {
   }
 }
 
-export const setController = (model: string) => {
-  if (model === "gemeni") {
-    return new GemeniAIController();
-  } else {
-    return new OpenRouterAIController();
-  }
+export let AIController: AIInterface = new GemeniAIController();
+
+export const setAIController = (model: string | null) => {
+  AIController =
+    model === "gemeni"
+      ? new GemeniAIController()
+      : new OpenRouterAIController();
+
+  return AIController;
 };
-
-const AIController = new OpenRouterAIController();
-
-export { AIController };

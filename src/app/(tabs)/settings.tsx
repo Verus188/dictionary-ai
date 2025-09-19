@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/button";
-import { AIController } from "@/src/helpers/AIController";
+import { AIController, setAIController } from "@/src/helpers/AIController";
 import { openRouterAIModelAtom, openRouterTokenAtom } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
@@ -9,27 +9,18 @@ import { ScrollView, Text, TextInput, View } from "react-native";
 const SettingsScreen = reatomComponent(({ ctx }) => {
   const [openRouterToken, setOpenRouterToken] = useState("");
   const token = ctx.spy(openRouterTokenAtom);
+  const AIModel = ctx.spy(openRouterAIModelAtom);
 
   return (
     <ScrollView className="bg-main-bg p-4">
       <View className="flex flex-col gap-8">
         <View className="flex gap-2">
-          <Text className="text-lg text-text-color">OpenRouter token</Text>
-          <TextInput
-            className={`border border-text-color rounded ${
-              token === openRouterToken ? "text-blue-400" : "text-text-color"
-            } py-1 px-1`}
-            onChangeText={setOpenRouterToken}
-          />
-          <Button onPress={() => openRouterTokenAtom(ctx, openRouterToken)}>
-            <Text className="text-text-color">Set</Text>
-          </Button>
-        </View>
-
-        <View className="flex gap-2">
           <Text className="text-lg text-text-color">OpenRouter AI model</Text>
-          <Picker<string>
-            onValueChange={(value) => openRouterAIModelAtom(ctx, value)}
+          <Picker<string | null>
+            onValueChange={(value) => {
+              setAIController(value);
+              openRouterAIModelAtom(ctx, value);
+            }}
             style={{
               color: "white",
               backgroundColor: "transparent",
@@ -65,6 +56,22 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
             />
           </Picker>
         </View>
+
+        {AIModel !== "gemeni" && (
+          <View className="flex gap-2">
+            <Text className="text-lg text-text-color">OpenRouter token</Text>
+            <TextInput
+              className={`border border-text-color rounded ${
+                token === openRouterToken ? "text-blue-400" : "text-text-color"
+              } py-1 px-1`}
+              onChangeText={setOpenRouterToken}
+            />
+            <Button onPress={() => openRouterTokenAtom(ctx, openRouterToken)}>
+              <Text className="text-text-color">Set</Text>
+            </Button>
+          </View>
+        )}
+
         <Button
           onPress={() => {
             console.log(`${ctx.get(openRouterAIModelAtom)} is thinking...`);
