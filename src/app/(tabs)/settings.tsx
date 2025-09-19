@@ -1,6 +1,10 @@
 import { Button } from "@/src/components/button";
 import { AIController, setAIController } from "@/src/enteties/AIController";
-import { openRouterAIModelAtom, openRouterTokenAtom } from "@/src/model/atoms";
+import {
+  educationLanguageAtom,
+  openRouterAIModelAtom,
+  openRouterTokenAtom,
+} from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
 import { useState } from "react";
@@ -85,6 +89,39 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
         >
           <Text className="text-text-color">Test</Text>
         </Button>
+
+        <View className="flex gap-2">
+          <Text className="text-lg text-text-color">Story language</Text>
+          <Picker<string>
+            onValueChange={(value) => {
+              educationLanguageAtom(ctx, value);
+            }}
+            style={{
+              color: "white",
+              backgroundColor: "transparent",
+              borderColor: "white",
+              borderWidth: 1,
+              borderRadius: 4,
+              padding: 4,
+            }}
+          >
+            <Picker.Item label="English" value="English" />
+            <Picker.Item label="Hindi" value="Hindi" />
+            {/* испанский почему то не работает */}
+            <Picker.Item label="Spanish" value="Spanish" />
+            <Picker.Item label="French" value="French" />
+            <Picker.Item label="Arabic" value="Arabic" />
+            <Picker.Item label="Bengali" value="Bengali" />
+            <Picker.Item label="Russian" value="Russian" />
+            <Picker.Item label="Portuguese" value="Portuguese" />
+            <Picker.Item label="Urdu" value="Urdu" />
+            <Picker.Item label="German" value="German" />
+            <Picker.Item label="Italian" value="Italian" />
+            <Picker.Item label="Kazakh" value="Kazakh" />
+            <Picker.Item label="Ukrainian" value="Ukrainian" />
+            <Picker.Item label="Polish" value="Polish" />
+          </Picker>
+        </View>
       </View>
     </ScrollView>
   );

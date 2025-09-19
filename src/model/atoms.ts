@@ -24,3 +24,8 @@ export const openRouterAIModelAtom = atom<string | null>(
 );
 // хранит всю истории и промпт сюжета
 export const storyInfoAtom = atom<StoryInfo | null>(plot1, "storyInfoAtom");
+
+export const educationLanguageAtom = atom<string>(
+  "English",
+  "educationLanguageAtom"
+);

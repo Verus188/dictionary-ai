@@ -1,20 +1,31 @@
 import { AIController } from "../enteties/AIController";
 import { StoryInfo } from "../model/types";
-import { storySystemPrompt } from "../prompts/story-system-prompt";
+import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
 
 export const doStoryAction = async (
   story: string,
-  action: string
+  action?: string,
+  continuationSize?: string,
+  mood?: string,
+  language?: string,
+  languageDifficulty?: string
 ): Promise<StoryInfo> => {
   const response = (
     await AIController.generateAIText(
-      `${story}\naction: ${action}\n${storySystemPrompt}`
+      getStoryContinuationPrompt(
+        story,
+        action,
+        continuationSize,
+        mood,
+        language,
+        languageDifficulty
+      )
     )
   )
     .replace(/```json|```/g, "")
     .trim();
 
-  console.log(`${story}\naction: ${action}\n${storySystemPrompt}`);
+  console.log(getStoryContinuationPrompt(story, action));
   console.log(response);
 
   try {

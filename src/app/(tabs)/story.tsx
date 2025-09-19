@@ -1,11 +1,14 @@
 import { Button } from "@/src/components/button";
 import { doStoryAction } from "@/src/helpers/doStoryAction";
-import { storyInfoAtom } from "@/src/model/atoms";
+import { educationLanguageAtom, storyInfoAtom } from "@/src/model/atoms";
 import { reatomComponent } from "@reatom/npm-react";
+import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
+  const [isStoryLoading, setIsStoryLoading] = useState(false);
   const storyInfo = ctx.spy(storyInfoAtom);
+  const language = ctx.spy(educationLanguageAtom);
   if (!storyInfo) {
     return null;
   }
@@ -24,11 +27,18 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       <View className="flex flex-1 w-full flex-row gap-4 justify-between">
         <Button
           onPress={() => {
-            doStoryAction(story, firstAction).then((storyInfo) => {
-              storyInfoAtom(ctx, storyInfo);
-            });
+            setIsStoryLoading(true);
+            doStoryAction(story, firstAction, undefined, undefined, language)
+              .then((storyInfo) => {
+                storyInfoAtom(ctx, storyInfo);
+              })
+              .finally(() => {
+                setIsStoryLoading(false);
+              });
           }}
-          className="flex-1 h-full"
+          className={`flex-1 h-full ${
+            isStoryLoading ? "opacity-50 pointer-events-none" : ""
+          }`}
         >
           <Text className="text-text-color text-base overflow-hidden">
             {firstAction}
@@ -36,11 +46,20 @@ const StoryScreen = reatomComponent(({ ctx }) => {
         </Button>
         <Button
           onPress={() => {
-            doStoryAction(story, secondAction).then((storyInfo) => {
-              storyInfoAtom(ctx, storyInfo);
-            });
+            console.log(123);
+
+            setIsStoryLoading(true);
+            doStoryAction(story, secondAction, undefined, undefined, language)
+              .then((storyInfo) => {
+                storyInfoAtom(ctx, storyInfo);
+              })
+              .finally(() => {
+                setIsStoryLoading(false);
+              });
           }}
-          className="flex-1 h-full"
+          className={`flex-1 h-full ${
+            isStoryLoading ? "opacity-50 pointer-events-none" : ""
+          }`}
         >
           <Text className="text-text-color text-base overflow-hidden">
             {secondAction}

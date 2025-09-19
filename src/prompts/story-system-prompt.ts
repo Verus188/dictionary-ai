@@ -1,6 +1,6 @@
 export const storySystemPrompt = `
 
-Continue this story.
+You are a storyteller. Continue this story.
 The field “action: …” is the action that the main character performs. Be sure to take it into account in the continuation of the story.
 
 The answer must be in JSON format.
