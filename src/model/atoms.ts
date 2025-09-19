@@ -31,3 +31,8 @@ export const educationLanguageAtom = atom<string>(
 );
 
 export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
+
+export const storyContinuationLengthAtom = atom<string>(
+  "800",
+  "storyContinuationLengthAtom"
+);

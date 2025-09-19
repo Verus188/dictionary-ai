@@ -19,12 +19,15 @@ export const getStoryContinuationPrompt = (
   languageDifficulty?: string
 ) => {
   const languagePrompt = language ? "The story have to be in " + language : "";
+  const continuationSizePrompt = continuationSize
+    ? `The continuation of the story should be about ${continuationSize} characters.`
+    : "";
 
   return [
     story,
     action,
     storySystemPrompt,
-    continuationSize,
+    continuationSizePrompt,
     mood,
     languagePrompt,
     languageDifficulty,

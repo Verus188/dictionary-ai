@@ -10,6 +10,16 @@ export const doStoryAction = async (
   language?: string,
   languageDifficulty?: string
 ): Promise<StoryInfo> => {
+  console.log(
+    getStoryContinuationPrompt(
+      story,
+      action,
+      continuationSize,
+      mood,
+      language,
+      languageDifficulty
+    )
+  );
   const response = (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
@@ -24,9 +34,6 @@ export const doStoryAction = async (
   )
     .replace(/```json|```/g, "")
     .trim();
-
-  console.log(getStoryContinuationPrompt(story, action));
-  console.log(response);
 
   try {
     return JSON.parse(response) as StoryInfo;

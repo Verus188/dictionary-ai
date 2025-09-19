@@ -1,9 +1,10 @@
 import { Button } from "@/src/components/button";
-import { AIController, setAIController } from "@/src/enteties/AIController";
+import { setAIController } from "@/src/enteties/AIController";
 import {
   educationLanguageAtom,
   openRouterAIModelAtom,
   openRouterTokenAtom,
+  storyContinuationLengthAtom,
 } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
@@ -76,19 +77,30 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           </View>
         )}
 
-        <Button
-          onPress={() => {
-            console.log(`${ctx.get(openRouterAIModelAtom)} is thinking...`);
-
-            AIController.generateAIText(
-              "Расскажи небольшую историю о себе"
-            ).then((text) => {
-              console.log(text);
-            });
-          }}
-        >
-          <Text className="text-text-color">Test</Text>
-        </Button>
+        <View className="flex gap-2">
+          <Text className="text-lg text-text-color">
+            Насколько длинные кусочки истории
+          </Text>
+          <Picker<string>
+            selectedValue={ctx.spy(storyContinuationLengthAtom)}
+            onValueChange={(value) => {
+              storyContinuationLengthAtom(ctx, value);
+            }}
+            style={{
+              color: "white",
+              backgroundColor: "transparent",
+              borderColor: "white",
+              borderWidth: 1,
+              borderRadius: 4,
+              padding: 4,
+            }}
+          >
+            <Picker.Item label="Короткие" value="400" />
+            <Picker.Item label="Средние (по умолчанию)" value="800" />
+            <Picker.Item label="Длинные" value="1200" />
+            <Picker.Item label="Очень длинные" value="1600" />
+          </Picker>
+        </View>
 
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">Story language</Text>

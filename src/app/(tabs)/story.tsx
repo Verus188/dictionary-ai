@@ -3,6 +3,7 @@ import { doStoryAction } from "@/src/helpers/doStoryAction";
 import {
   educationLanguageAtom,
   isStoryLoadingAtom,
+  storyContinuationLengthAtom,
   storyInfoAtom,
 } from "@/src/model/atoms";
 import { reatomComponent } from "@reatom/npm-react";
@@ -11,7 +12,6 @@ import { ScrollView, Text, View } from "react-native";
 const StoryScreen = reatomComponent(({ ctx }) => {
   const isStoryLoading = ctx.spy(isStoryLoadingAtom);
   const storyInfo = ctx.spy(storyInfoAtom);
-  const language = ctx.spy(educationLanguageAtom);
   if (!storyInfo) {
     return null;
   }
@@ -19,6 +19,23 @@ const StoryScreen = reatomComponent(({ ctx }) => {
   const continuation = storyInfo.continuation || "";
   const firstAction = storyInfo.firstAction || "";
   const secondAction = storyInfo.secondAction || "";
+
+  const handleButtonPress = (action: string) => {
+    isStoryLoadingAtom(ctx, true);
+    doStoryAction(
+      story,
+      action,
+      ctx.get(storyContinuationLengthAtom),
+      undefined,
+      ctx.get(educationLanguageAtom)
+    )
+      .then((storyInfo) => {
+        storyInfoAtom(ctx, storyInfo);
+      })
+      .finally(() => {
+        isStoryLoadingAtom(ctx, false);
+      });
+  };
 
   return (
     <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
@@ -30,14 +47,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       <View className="flex flex-1 w-full flex-row gap-4 justify-between">
         <Button
           onPress={() => {
-            isStoryLoadingAtom(ctx, true);
-            doStoryAction(story, firstAction, undefined, undefined, language)
-              .then((storyInfo) => {
-                storyInfoAtom(ctx, storyInfo);
-              })
-              .finally(() => {
-                isStoryLoadingAtom(ctx, false);
-              });
+            handleButtonPress(firstAction);
           }}
           className={`flex-1 h-full ${
             isStoryLoading ? "opacity-50 pointer-events-none" : ""
@@ -49,14 +59,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
         </Button>
         <Button
           onPress={() => {
-            isStoryLoadingAtom(ctx, true);
-            doStoryAction(story, secondAction, undefined, undefined, language)
-              .then((storyInfo) => {
-                storyInfoAtom(ctx, storyInfo);
-              })
-              .finally(() => {
-                isStoryLoadingAtom(ctx, false);
-              });
+            handleButtonPress(secondAction);
           }}
           className={`flex-1 h-full ${
             isStoryLoading ? "opacity-50 pointer-events-none" : ""
