@@ -1,3 +1,4 @@
+import { plot1 } from "@/src/prompts/plot-1";
 import { atom, createCtx } from "@reatom/core";
 import { DictionaryCard } from "../types";
 
@@ -13,5 +14,13 @@ export const isCardModalVisibleAtom = atom<boolean>(
   "isCardModalVisibleAtom"
 );
 
-export const openRouterTokenAtom = atom<string>("", "openRouterTokenAtom");
-export const openRouterAIModelAtom = atom<string>("", "openRouterAIModelAtom");
+export const openRouterTokenAtom = atom<string | null>(
+  null,
+  "openRouterTokenAtom"
+);
+export const openRouterAIModelAtom = atom<string | null>(
+  null,
+  "openRouterAIModelAtom"
+);
+// хранит всю истории и промпт сюжета
+export const plotPromptAtom = atom<string | null>(plot1, "plotPromptAtom");

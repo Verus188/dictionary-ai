@@ -1,0 +1,89 @@
+import { GoogleGenAI } from "@google/genai";
+import axios from "axios";
+import {
+  openRouterAIModelAtom,
+  openRouterTokenAtom,
+  reatomCtx,
+} from "../model/atoms";
+
+interface AIInterface {
+  generateAIText: (prompt: string) => Promise<string>;
+}
+
+const ctx = reatomCtx;
+
+class OpenRouterAIController implements AIInterface {
+  async generateAIText(prompt: string) {
+    const apiKey = ctx.get(openRouterTokenAtom);
+    const AIModel = ctx.get(openRouterAIModelAtom);
+
+    if (!apiKey || !AIModel) {
+      return "";
+    }
+
+    return axios({
+      url: "https://openrouter.ai/api/v1/chat/completions",
+      method: "post",
+      headers: {
+        Authorization: "Bearer " + apiKey,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        model: AIModel,
+        messages: [{ role: "system", content: prompt }],
+      }),
+    })
+      .then((response) => {
+        const text = response.data.choices[0].message.content;
+
+        return text;
+      })
+      .catch((error) => {
+        console.error("Error fetching API info:", error);
+        return "";
+      });
+  }
+}
+
+class GemeniAIController implements AIInterface {
+  private ai = new GoogleGenAI({
+    apiKey: "AIzaSyCzl8i9dRBBXPYh5S1DqWSMFAV51ZqVxsM",
+  });
+
+  async generateAIText(prompt: string) {
+    const apiKey = ctx.get(openRouterTokenAtom);
+    const AIModel = ctx.get(openRouterAIModelAtom);
+
+    if (!apiKey || !AIModel) {
+      return "";
+    }
+
+    //параметры запроса, если нет json файла
+    const defaulParameters = {
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    };
+
+    return this.ai.models
+      .generateContent(defaulParameters)
+      .then((response) => {
+        return response.text || "";
+      })
+      .catch((error) => {
+        console.error(error);
+        return "";
+      });
+  }
+}
+
+export const setController = (model: string) => {
+  if (model === "gemeni") {
+    return new GemeniAIController();
+  } else {
+    return new OpenRouterAIController();
+  }
+};
+
+const AIController = new OpenRouterAIController();
+
+export { AIController };

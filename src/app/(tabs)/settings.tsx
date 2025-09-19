@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/button";
-import { generateAIText } from "@/src/helpers/generateAIText";
+import { AIController } from "@/src/helpers/AIController";
 import { openRouterAIModelAtom, openRouterTokenAtom } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
@@ -40,6 +40,10 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
             }}
           >
             <Picker.Item
+              label="Google: Gemini-2.5-flash (free)"
+              value="gemeni"
+            />
+            <Picker.Item
               label="DeepSeek: DeepSeek V3.1 (free)"
               value="deepseek/deepseek-chat-v3.1:free"
             />
@@ -65,9 +69,7 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           onPress={() => {
             console.log(`${ctx.get(openRouterAIModelAtom)} is thinking...`);
 
-            generateAIText(
-              token,
-              ctx.get(openRouterAIModelAtom),
+            AIController.generateAIText(
               "Расскажи небольшую историю о себе"
             ).then((text) => {
               console.log(text);
