@@ -1,74 +1,111 @@
 import { Button } from "@/src/components/button";
-import { doStoryAction } from "@/src/helpers/doStoryAction";
+import { continueStory } from "@/src/helpers/continue-story";
+import { initStory } from "@/src/helpers/init-story";
 import {
   educationLanguageAtom,
   isStoryLoadingAtom,
+  storyAtom,
+  storyContinuationAtom,
   storyContinuationLengthAtom,
-  storyInfoAtom,
   storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
+import { StoryContinuation } from "@/src/model/types";
 import { reatomComponent } from "@reatom/npm-react";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
+  const [continuation, setContinuation] = useState<StoryContinuation | null>(
+    null
+  );
   const isStoryLoading = ctx.spy(isStoryLoadingAtom);
-  const storyInfo = ctx.spy(storyInfoAtom);
-  if (!storyInfo) {
-    return null;
-  }
-  const story = storyInfo.story || "";
-  const continuation = storyInfo.continuation || "";
-  const firstAction = storyInfo.firstAction || "";
-  const secondAction = storyInfo.secondAction || "";
 
-  const handleButtonPress = (action: string) => {
+  const continuationsInfo = ctx.spy(storyContinuationAtom);
+
+  useEffect(() => {
     isStoryLoadingAtom(ctx, true);
-    doStoryAction(
+    const story = ctx.get(storyAtom);
+    if (!continuationsInfo && story) {
+      initStory(
+        story,
+        ctx.get(storyContinuationLengthAtom),
+        undefined,
+        ctx.get(educationLanguageAtom),
+        ctx.get(storyLanguageDifficultyAtom)
+      ).then((storyInfo) => {
+        setContinuation(storyInfo.continuationsInfo);
+      });
+
+      continueStory(
+        story,
+        continuation?.actions,
+        ctx.get(storyContinuationLengthAtom),
+        undefined,
+        ctx.get(educationLanguageAtom),
+        ctx.get(storyLanguageDifficultyAtom)
+      )
+        .then((storyContinuation) => {
+          storyContinuationAtom(ctx, storyContinuation);
+        })
+        .finally(() => {
+          isStoryLoadingAtom(ctx, false);
+        });
+    }
+  }, []);
+
+  const handlePressButton = () => {
+    isStoryLoadingAtom(ctx, true);
+    storyAtom(ctx, (prev) => prev + "\n" + continuation?.continuation);
+    const story = ctx.get(storyAtom);
+
+    if (!story) return;
+    continueStory(
       story,
-      action,
+      continuation?.actions,
       ctx.get(storyContinuationLengthAtom),
       undefined,
       ctx.get(educationLanguageAtom),
       ctx.get(storyLanguageDifficultyAtom)
     )
-      .then((storyInfo) => {
-        storyInfoAtom(ctx, storyInfo);
-      })
+      .then((storyContinuation) => {})
       .finally(() => {
         isStoryLoadingAtom(ctx, false);
       });
   };
 
+  if (!continuationsInfo || !continuation) return null;
   return (
     <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
       <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">
         <Text className="text-text-color text-base px-4 py-2">
-          {continuation}
+          {continuation.continuation}
         </Text>
       </ScrollView>
       <View className="flex flex-1 w-full flex-row gap-4 justify-between">
         <Button
           onPress={() => {
-            handleButtonPress(firstAction);
+            setContinuation(continuationsInfo.continuation1);
+            handlePressButton();
           }}
           className={`flex-1 h-full ${
             isStoryLoading ? "opacity-50 pointer-events-none" : ""
           }`}
         >
           <Text className="text-text-color text-base overflow-hidden">
-            {firstAction}
+            {continuation.actions.action1}
           </Text>
         </Button>
         <Button
           onPress={() => {
-            handleButtonPress(secondAction);
+            setContinuation(continuationsInfo.continuation2);
+            handlePressButton();
           }}
           className={`flex-1 h-full ${
             isStoryLoading ? "opacity-50 pointer-events-none" : ""
           }`}
         >
           <Text className="text-text-color text-base overflow-hidden">
-            {secondAction}
+            {continuation.actions.action2}
           </Text>
         </Button>
       </View>

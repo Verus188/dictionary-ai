@@ -1,4 +1,4 @@
-import { storySystemPrompt } from "./story-system-prompt";
+import { StoryActions } from "../model/types";
 
 /**
  * Возвращает промпт для составления продолжения истории
@@ -12,12 +12,16 @@ import { storySystemPrompt } from "./story-system-prompt";
  */
 export const getStoryContinuationPrompt = (
   story: string,
-  action?: string,
+  systemPrompt: string,
+  actions?: StoryActions,
   continuationSize?: string,
   mood?: string,
   language?: string,
   languageDifficulty?: string
 ) => {
+  const actionsPrompt = actions
+    ? `action-1: ${actions?.action1},\naction-2: ${actions?.action2}`
+    : "";
   const languagePrompt = language ? "The story have to be in " + language : "";
   const continuationSizePrompt = continuationSize
     ? `The continuation of the story should be about ${continuationSize} characters.`
@@ -35,8 +39,8 @@ export const getStoryContinuationPrompt = (
 
   return [
     story,
-    action,
-    storySystemPrompt,
+    actionsPrompt,
+    systemPrompt,
     continuationSizePrompt,
     mood,
     languagePrompt,

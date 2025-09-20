@@ -1,19 +1,20 @@
 import { AIController } from "../enteties/AIController";
-import { StoryInfo } from "../model/types";
+import { InitStoryInfo } from "../model/types";
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
+import { initStoryPrompt } from "../prompts/init-story-prompt";
 
-export const doStoryAction = async (
+export const initStory = async (
   story: string,
-  action?: string,
   continuationSize?: string,
   mood?: string,
   language?: string,
   languageDifficulty?: string
-): Promise<StoryInfo> => {
+): Promise<InitStoryInfo> => {
   console.log(
     getStoryContinuationPrompt(
       story,
-      action,
+      initStoryPrompt,
+      undefined,
       continuationSize,
       mood,
       language,
@@ -24,7 +25,8 @@ export const doStoryAction = async (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
         story,
-        action,
+        initStoryPrompt,
+        undefined,
         continuationSize,
         mood,
         language,
@@ -36,13 +38,26 @@ export const doStoryAction = async (
     .trim();
 
   try {
-    return JSON.parse(response) as StoryInfo;
+    return JSON.parse(response) as InitStoryInfo;
   } catch (error) {
     return {
-      story,
-      continuation: "Error",
-      firstAction: "",
-      secondAction: "",
+      story: "Error",
+      continuationsInfo: {
+        continuation1: {
+          continuation: "Error",
+          actions: {
+            action1: "Error",
+            action2: "Error",
+          },
+        },
+        continuation2: {
+          continuation: "Error",
+          actions: {
+            action1: "Error",
+            action2: "Error",
+          },
+        },
+      },
     };
   }
 };
