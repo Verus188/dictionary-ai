@@ -7,14 +7,16 @@ The field “action-2: …” is the second action that the main character perfo
 
 The answer must be in JSON format.
 
-The answer must contain two fields: firstContinuation and secondContinuation.
+The answer must contain two fields: continueuation1 and continueuation2.
 
-firstContinuation and secondContinuation must contain fields: continuation and actions.
+continueuation1 and continueuation2 must contain fields: continuation and actions.
 
-The 'continuation' of firstContinuation must contain continuation of the story corresponding to 'action-1'
-The 'continuation' of secondContinuation must contain continuation of the story corresponding to 'action-2'
+The 'continuation' of continueuation1 must contain continuation of the story corresponding to 'action-1'
+The 'continuation' of continueuation2 must contain continuation of the story corresponding to 'action-2'
 
-'actions' of firstContinuation and secondContinuation must contain descriptions of two actions the main character might take in each continuation.
+'actions' of continueuation1 and continueuation2 must contain fields: action1 and action2
+action1 and action2 must contain descriptions of action that the main character might take in each continuation.
+
 The actions must describe what the main character is about to do. The description of an action must be no more than 5–6 words.
 
 For example,
@@ -36,19 +38,19 @@ JSON
 {
 
 "continuation1": {
-    continuation: "",
-    actions: [
-        "",
-        ""
-    ]
+    "continuation": "",
+    actions: {
+        "action1": "",
+        "action2": ""
+    }
 },
 
 "continuation2": {
-    continuation: "",
-    actions: [
-        "",
-        ""
-    ]
+    "continuation": "",
+    "actions": {
+        "action1": "",
+        "action2": ""
+    }
 }
 
 ⸻

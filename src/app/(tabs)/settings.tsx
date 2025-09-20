@@ -154,8 +154,8 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
             }}
           >
             <Picker.Item label="Очень простая" value="1" />
-            <Picker.Item label="Простая" value="2" />
-            <Picker.Item label="Срядняя (по умолчанию)" value="3" />
+            <Picker.Item label="Простая (по умолчанию)" value="2" />
+            <Picker.Item label="Срядняя" value="3" />
             <Picker.Item label="Продвинутая" value="4" />
             <Picker.Item label="Сложная" value="5" />
             <Picker.Item label="Очень сложная" value="6" />

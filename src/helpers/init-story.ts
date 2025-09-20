@@ -1,19 +1,19 @@
 import { AIController } from "../enteties/AIController";
-import { InitStoryInfo } from "../model/types";
+import { StoryActions } from "../model/types";
+import { getStoryActionsPrompt } from "../prompts/get-story-actions-prompt";
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
-import { initStoryPrompt } from "../prompts/init-story-prompt";
 
-export const initStory = async (
+export const getStoryActions = async (
   story: string,
   continuationSize?: string,
   mood?: string,
   language?: string,
   languageDifficulty?: string
-): Promise<InitStoryInfo> => {
+): Promise<StoryActions> => {
   console.log(
     getStoryContinuationPrompt(
       story,
-      initStoryPrompt,
+      getStoryActionsPrompt,
       undefined,
       continuationSize,
       mood,
@@ -25,7 +25,7 @@ export const initStory = async (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
         story,
-        initStoryPrompt,
+        getStoryActionsPrompt,
         undefined,
         continuationSize,
         mood,
@@ -38,26 +38,13 @@ export const initStory = async (
     .trim();
 
   try {
-    return JSON.parse(response) as InitStoryInfo;
+    return JSON.parse(response) as StoryActions;
   } catch (error) {
+    console.log("response", response);
+    console.error(error);
     return {
-      story: "Error",
-      continuationsInfo: {
-        continuation1: {
-          continuation: "Error",
-          actions: {
-            action1: "Error",
-            action2: "Error",
-          },
-        },
-        continuation2: {
-          continuation: "Error",
-          actions: {
-            action1: "Error",
-            action2: "Error",
-          },
-        },
-      },
+      action1: "Error",
+      action2: "Error",
     };
   }
 };

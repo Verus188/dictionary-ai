@@ -1,6 +1,6 @@
 import { Button } from "@/src/components/button";
 import { continueStory } from "@/src/helpers/continue-story";
-import { initStory } from "@/src/helpers/init-story";
+import { getStoryActions } from "@/src/helpers/init-story";
 import {
   educationLanguageAtom,
   isStoryLoadingAtom,
@@ -15,41 +15,51 @@ import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
+  // для отображения. История и возможные действия
   const [continuation, setContinuation] = useState<StoryContinuation | null>(
     null
   );
   const isStoryLoading = ctx.spy(isStoryLoadingAtom);
 
+  // варинанты развития истории
   const continuationsInfo = ctx.spy(storyContinuationAtom);
 
   useEffect(() => {
     isStoryLoadingAtom(ctx, true);
     const story = ctx.get(storyAtom);
     if (!continuationsInfo && story) {
-      initStory(
+      getStoryActions(
         story,
         ctx.get(storyContinuationLengthAtom),
         undefined,
         ctx.get(educationLanguageAtom),
         ctx.get(storyLanguageDifficultyAtom)
       ).then((storyInfo) => {
-        setContinuation(storyInfo.continuationsInfo);
-      });
-
-      continueStory(
-        story,
-        continuation?.actions,
-        ctx.get(storyContinuationLengthAtom),
-        undefined,
-        ctx.get(educationLanguageAtom),
-        ctx.get(storyLanguageDifficultyAtom)
-      )
-        .then((storyContinuation) => {
-          storyContinuationAtom(ctx, storyContinuation);
-        })
-        .finally(() => {
-          isStoryLoadingAtom(ctx, false);
+        setContinuation({
+          continuation: story,
+          actions: storyInfo,
         });
+        console.log(storyInfo);
+
+        continueStory(
+          story,
+          continuation?.actions,
+          ctx.get(storyContinuationLengthAtom),
+          undefined,
+          ctx.get(educationLanguageAtom),
+          ctx.get(storyLanguageDifficultyAtom)
+        )
+          .then((storyContinuation) => {
+            console.log(storyContinuation);
+
+            storyContinuationAtom(ctx, storyContinuation);
+          })
+          .finally(() => {
+            isStoryLoadingAtom(ctx, false);
+          });
+      });
+    } else {
+      isStoryLoadingAtom(ctx, false);
     }
   }, []);
 
@@ -67,13 +77,38 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       ctx.get(educationLanguageAtom),
       ctx.get(storyLanguageDifficultyAtom)
     )
-      .then((storyContinuation) => {})
+      .then((storyContinuation) => {
+        storyContinuationAtom(ctx, storyContinuation);
+      })
       .finally(() => {
         isStoryLoadingAtom(ctx, false);
       });
   };
 
-  if (!continuationsInfo || !continuation) return null;
+  console.log();
+
+  console.log("continuationsInfo", continuationsInfo);
+  console.log("continuation", continuation);
+
+  if (!continuationsInfo || !continuation) {
+    return (
+      <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
+        <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg"></ScrollView>
+        <View className="flex flex-1 w-full flex-row gap-4 justify-between">
+          <Button
+            className={`flex-1 h-full ${
+              isStoryLoading ? "opacity-50 pointer-events-none" : ""
+            }`}
+          ></Button>
+          <Button
+            className={`flex-1 h-full ${
+              isStoryLoading ? "opacity-50 pointer-events-none" : ""
+            }`}
+          ></Button>
+        </View>
+      </View>
+    );
+  }
   return (
     <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
       <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">

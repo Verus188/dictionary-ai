@@ -41,6 +41,8 @@ export const continueStory = async (
   try {
     return JSON.parse(response) as StoryContinuationsInfo;
   } catch (error) {
+    console.log("response", response);
+    console.error(error);
     return {
       continuation1: {
         continuation: "Error",

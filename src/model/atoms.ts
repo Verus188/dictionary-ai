@@ -1,4 +1,5 @@
 import { atom, createCtx } from "@reatom/core";
+import { plot1 } from "../prompts/plot-1";
 import { DictionaryCard, StoryContinuationsInfo } from "./types";
 
 export const reatomCtx = createCtx();
@@ -22,7 +23,7 @@ export const openRouterAIModelAtom = atom<string | null>(
   "openRouterAIModelAtom"
 );
 // хранит всю истории и промпт сюжета
-export const storyAtom = atom<string | null>(null, "storyInfoAtom");
+export const storyAtom = atom<string | null>(plot1, "storyInfoAtom");
 
 export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
   null,
@@ -42,6 +43,6 @@ export const storyContinuationLengthAtom = atom<string>(
 );
 
 export const storyLanguageDifficultyAtom = atom<string>(
-  "3",
+  "2",
   "storyLanguageDifficultyAtom"
 );
