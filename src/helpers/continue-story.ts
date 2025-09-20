@@ -11,17 +11,6 @@ export const continueStory = async (
   language?: string,
   languageDifficulty?: string
 ): Promise<StoryContinuationsInfo> => {
-  console.log(
-    getStoryContinuationPrompt(
-      story,
-      storySystemPrompt,
-      actions,
-      continuationSize,
-      mood,
-      language,
-      languageDifficulty
-    )
-  );
   const response = (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
