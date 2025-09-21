@@ -1,17 +1,32 @@
+import { Button } from "@/src/components/button";
 import { DictionaryCard } from "@/src/components/dictionary-card";
 import { InputModal } from "@/src/components/input-modal";
 import { storage } from "@/src/enteties/strorage-controller";
 import { generateId } from "@/src/helpers/generateId";
 import { dictionaryCardsAtom, isCardModalVisibleAtom } from "@/src/model/atoms";
+import { DictionaryCardInfo } from "@/src/model/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const DictionaryScreen = reatomComponent(({ ctx }) => {
-  const cards = ctx.spy(dictionaryCardsAtom);
+  const [cards, setCards] = useState<DictionaryCardInfo[]>([]);
+
+  useEffect(() => {
+    storage.getAllCards().then((cards) => setCards(cards));
+  }, []);
 
   return (
     <>
+      <Button
+        onPress={async () => {
+          const cards = await storage.getAllCards();
+          console.log(cards);
+        }}
+      >
+        TEST
+      </Button>
       {cards.length > 0 ? (
         <ScrollView
           className="flex-1 bg-main-bg"

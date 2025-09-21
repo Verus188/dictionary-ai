@@ -1,4 +1,4 @@
-export type DictionaryCard = {
+export type DictionaryCardInfo = {
   card: string;
   id: string;
 };

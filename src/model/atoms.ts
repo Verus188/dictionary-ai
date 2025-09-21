@@ -1,10 +1,10 @@
 import { atom, createCtx } from "@reatom/core";
 import { plot1 } from "../prompts/plot-1";
-import { DictionaryCard, StoryContinuationsInfo } from "./types";
+import { DictionaryCardInfo, StoryContinuationsInfo } from "./types";
 
 export const reatomCtx = createCtx();
 
-export const dictionaryCardsAtom = atom<DictionaryCard[]>(
+export const dictionaryCardsAtom = atom<DictionaryCardInfo[]>(
   [],
   "dictionaryCardsAtom"
 );
