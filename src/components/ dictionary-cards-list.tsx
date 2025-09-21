@@ -1,7 +1,7 @@
 import { reatomComponent } from "@reatom/npm-react";
 import { useSQLiteContext } from "expo-sqlite";
 import { FC, useEffect } from "react";
-import { View, ViewProps } from "react-native";
+import { Alert, Platform, View, ViewProps } from "react-native";
 import { twMerge } from "tailwind-merge";
 import sqliteBD from "../enteties/sqliteDB";
 import { deleteDictionaryCardAction } from "../model/actions";
@@ -28,7 +28,34 @@ export const DictionaryCardsList: FC<DictionaryCardsListProps> =
             key={card.id}
             card={card.card}
             id={card.id}
-            onDelete={(id) => deleteDictionaryCardAction(ctx, db, id)}
+            onDelete={(id) => {
+              if (Platform.OS === "web") {
+                const ok = window.confirm(
+                  `Are you sure you want to delete '${card.card}' card?`
+                );
+                if (!ok) return;
+                deleteDictionaryCardAction(ctx, db, id);
+                return;
+              }
+
+              Alert.alert(
+                "Delete card",
+                `Are you sure you want to delete '${card.card}' card?`,
+                [
+                  {
+                    text: "Cancel",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Delete",
+                    onPress: () => {
+                      deleteDictionaryCardAction(ctx, db, id);
+                    },
+                    style: "destructive",
+                  },
+                ]
+              );
+            }}
           />
         ))}
       </View>

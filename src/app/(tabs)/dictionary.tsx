@@ -11,9 +11,9 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
   const db = useSQLiteContext();
 
   return (
-    <>
+    <View className="flex-1 bg-main-bg items-center">
       <ScrollView
-        className="flex-1 bg-main-bg"
+        className="flex-1 w-full max-w-[800px]"
         contentContainerStyle={{
           flexGrow: 1,
           paddingVertical: 16,
@@ -30,6 +30,7 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
         )}
       </ScrollView>
       <InputModal
+        header="Add new card"
         isVisible={ctx.spy(isCardModalVisibleAtom)}
         onClose={() => isCardModalVisibleAtom(ctx, false)}
         onSubmit={(card) => {
@@ -37,7 +38,7 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
         }}
         submitButtonText="Add"
       />
-    </>
+    </View>
   );
 });
 

@@ -14,8 +14,8 @@ export const DictionaryCard: FC<DictionaryCardProps> = ({
   onDelete,
 }) => {
   return (
-    <View className="flex flex-row w-full px-2 py-4 border-2 border-card-border-color bg-card-bg rounded-lg justify-between">
-      <Text className="text-text-color text-xl">{card}</Text>
+    <View className="flex gap-2 flex-row w-full px-4 py-4 border-2 border-card-border-color bg-card-bg rounded-lg">
+      <Text className="flex-1 text-text-color text-xl">{card}</Text>
       <Pressable
         onPress={() => {
           onDelete?.(id);
