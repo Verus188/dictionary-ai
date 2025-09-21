@@ -10,14 +10,12 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
 import { useSQLiteContext } from "expo-sqlite";
-import { useRef } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
 const SettingsScreen = reatomComponent(({ ctx }) => {
   const db = useSQLiteContext();
   const token = ctx.spy(openRouterTokenAtom);
   const AIModel = ctx.spy(AIModelAtom);
-  const tokenInputText = useRef<string>("");
 
   return (
     <ScrollView className="bg-main-bg p-4">

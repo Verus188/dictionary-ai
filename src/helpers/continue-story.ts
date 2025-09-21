@@ -1,5 +1,9 @@
 import { AIController } from "../enteties/AIController";
-import { StoryActions, StoryContinuationsInfo } from "../model/types";
+import {
+  DictionaryCardInfo,
+  StoryActions,
+  StoryContinuationsInfo,
+} from "../model/types";
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
 import { storySystemPrompt } from "../prompts/story-system-prompt";
 
@@ -9,7 +13,8 @@ export const continueStory = async (
   continuationSize?: string,
   mood?: string,
   language?: string,
-  languageDifficulty?: string
+  languageDifficulty?: string,
+  dictionaryCards?: DictionaryCardInfo[]
 ): Promise<StoryContinuationsInfo> => {
   const response = (
     await AIController.generateAIText(
@@ -20,7 +25,8 @@ export const continueStory = async (
         continuationSize,
         mood,
         language,
-        languageDifficulty
+        languageDifficulty,
+        dictionaryCards
       )
     )
   )

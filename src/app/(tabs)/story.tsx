@@ -2,6 +2,7 @@ import { Button } from "@/src/components/button";
 import { continueStory } from "@/src/helpers/continue-story";
 import { getStoryActions } from "@/src/helpers/init-story";
 import {
+  dictionaryCardsAtom,
   educationLanguageAtom,
   isStoryLoadingAtom,
   storyAtom,
@@ -72,7 +73,8 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       ctx.get(storyContinuationLengthAtom),
       undefined,
       ctx.get(educationLanguageAtom),
-      ctx.get(storyLanguageDifficultyAtom)
+      ctx.get(storyLanguageDifficultyAtom),
+      ctx.get(dictionaryCardsAtom)
     )
       .then((storyContinuation) => {
         storyContinuationAtom(ctx, storyContinuation);

@@ -11,8 +11,6 @@ import {
   storyContinuationLengthAtom,
   storyLanguageDifficultyAtom,
 } from "../model/atoms";
-// DROP TABLE IF EXISTS dictionaryCards;
-// DROP TABLE IF EXISTS settings;
 
 export default function RootLayout() {
   return (

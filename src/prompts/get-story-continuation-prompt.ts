@@ -1,4 +1,4 @@
-import { StoryActions } from "../model/types";
+import { DictionaryCardInfo, StoryActions } from "../model/types";
 
 /**
  * Возвращает промпт для составления продолжения истории
@@ -17,7 +17,8 @@ export const getStoryContinuationPrompt = (
   continuationSize?: string,
   mood?: string,
   language?: string,
-  languageDifficulty?: string
+  languageDifficulty?: string,
+  dictionaryCards?: DictionaryCardInfo[]
 ) => {
   const actionsPrompt = actions
     ? `action-1: ${actions?.action1},\naction-2: ${actions?.action2}`
@@ -37,6 +38,10 @@ export const getStoryContinuationPrompt = (
 	6.	Very complex language — almost academic style, high density of metaphors and literary devices, abundance of details.`
     : "";
 
+  const dictionaryCardsPrompt = dictionaryCards
+    ? `Use the following words and phrases in continuation: ${dictionaryCards.map((card) => card.card).join(", ")}`
+    : "";
+
   return [
     story,
     actionsPrompt,
@@ -45,5 +50,6 @@ export const getStoryContinuationPrompt = (
     mood,
     languagePrompt,
     languageDifficultyPrompt,
+    dictionaryCardsPrompt,
   ].join("\n");
 };
