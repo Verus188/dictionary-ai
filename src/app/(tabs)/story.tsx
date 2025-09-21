@@ -39,7 +39,6 @@ const StoryScreen = reatomComponent(({ ctx }) => {
           continuation: story,
           actions: storyInfo,
         });
-        console.log(storyInfo);
 
         continueStory(
           story,
@@ -50,8 +49,6 @@ const StoryScreen = reatomComponent(({ ctx }) => {
           ctx.get(storyLanguageDifficultyAtom)
         )
           .then((storyContinuation) => {
-            console.log(storyContinuation);
-
             storyContinuationAtom(ctx, storyContinuation);
           })
           .finally(() => {
@@ -84,11 +81,6 @@ const StoryScreen = reatomComponent(({ ctx }) => {
         isStoryLoadingAtom(ctx, false);
       });
   };
-
-  console.log();
-
-  console.log("continuationsInfo", continuationsInfo);
-  console.log("continuation", continuation);
 
   if (!continuationsInfo || !continuation) {
     return (

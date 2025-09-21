@@ -1,5 +1,6 @@
 import { DictionaryCard } from "@/src/components/dictionary-card";
 import { InputModal } from "@/src/components/input-modal";
+import { storage } from "@/src/enteties/strorage-controller";
 import { generateId } from "@/src/helpers/generateId";
 import { dictionaryCardsAtom, isCardModalVisibleAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -43,12 +44,13 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
       <InputModal
         isVisible={ctx.spy(isCardModalVisibleAtom)}
         onClose={() => isCardModalVisibleAtom(ctx, false)}
-        onSubmit={(card) =>
+        onSubmit={(card) => {
+          storage.saveCard(card);
           dictionaryCardsAtom(ctx, (cards) => [
             ...cards,
             { card, id: generateId() },
-          ])
-        }
+          ]);
+        }}
         submitButtonText="Add"
       />
     </>
