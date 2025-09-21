@@ -4,7 +4,7 @@ import { FC, useEffect } from "react";
 import { View, ViewProps } from "react-native";
 import { twMerge } from "tailwind-merge";
 import sqliteBD from "../enteties/sqliteDB";
-import { deleteDictionaryCard } from "../model/actions";
+import { deleteDictionaryCardAction } from "../model/actions";
 import { dictionaryCardsAtom } from "../model/atoms";
 import { DictionaryCard } from "./dictionary-card";
 
@@ -28,7 +28,7 @@ export const DictionaryCardsList: FC<DictionaryCardsListProps> =
             key={card.id}
             card={card.card}
             id={card.id}
-            onDelete={(id) => deleteDictionaryCard(ctx, db, id)}
+            onDelete={(id) => deleteDictionaryCardAction(ctx, db, id)}
           />
         ))}
       </View>

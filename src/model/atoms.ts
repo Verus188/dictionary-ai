@@ -14,34 +14,33 @@ export const isCardModalVisibleAtom = atom<boolean>(
   "isCardModalVisibleAtom"
 );
 
-export const openRouterTokenAtom = atom<string | null>(
-  null,
-  "openRouterTokenAtom"
-);
-export const openRouterAIModelAtom = atom<string | null>(
-  "gemeni",
-  "openRouterAIModelAtom"
-);
 // хранит всю истории и промпт сюжета
 export const storyAtom = atom<string | null>(plot1, "storyInfoAtom");
 
+// хранит варианты развития истории
 export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
   null,
   "storyContinuationAtom"
 );
 
+export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
+
+// Атом настроек
+/** Токен для openRouter */
+export const openRouterTokenAtom = atom<string>("", "openRouterTokenAtom");
+/** Выбранна модель нейросети для openRouter */
+export const AIModelAtom = atom<string>("gemeni", "openRouterAIModelAtom");
+/** язык, который изучается пользователем */
 export const educationLanguageAtom = atom<string>(
   "English",
   "educationLanguageAtom"
 );
-
-export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
-
+/** насколько длинные варианты развития истории */
 export const storyContinuationLengthAtom = atom<string>(
   "800",
   "storyContinuationLengthAtom"
 );
-
+/** насколько сложный язык истории */
 export const storyLanguageDifficultyAtom = atom<string>(
   "2",
   "storyLanguageDifficultyAtom"

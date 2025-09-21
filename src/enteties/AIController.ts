@@ -1,10 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import axios from "axios";
-import {
-  openRouterAIModelAtom,
-  openRouterTokenAtom,
-  reatomCtx,
-} from "../model/atoms";
+import { AIModelAtom, openRouterTokenAtom, reatomCtx } from "../model/atoms";
 
 interface AIInterface {
   generateAIText: (prompt: string) => Promise<string>;
@@ -15,7 +11,7 @@ const ctx = reatomCtx;
 class OpenRouterAIController implements AIInterface {
   async generateAIText(prompt: string) {
     const apiKey = ctx.get(openRouterTokenAtom);
-    const AIModel = ctx.get(openRouterAIModelAtom);
+    const AIModel = ctx.get(AIModelAtom);
 
     if (!apiKey || !AIModel) {
       return "";

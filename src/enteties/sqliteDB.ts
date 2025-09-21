@@ -13,6 +13,17 @@ class SQLiteBD {
   deleteCard = async (db: SQLiteDatabase, id: string): Promise<void> => {
     db.runAsync("DELETE FROM dictionaryCards WHERE id = ?", [id]);
   };
+
+  setSetting = async (
+    db: SQLiteDatabase,
+    setting: string,
+    value: string | null
+  ) => {
+    db.runAsync("UPDATE settings WHERE setting = ? SET value = ?", [
+      setting,
+      value,
+    ]);
+  };
 }
 
 const sqliteBD = new SQLiteBD();

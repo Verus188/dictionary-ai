@@ -8,13 +8,26 @@ export default function RootLayout() {
     <SQLiteProvider
       databaseName="dictionary.db"
       onInit={async (db) => {
-        db.execAsync(`
+        await db.execAsync(`
         PRAGMA journal_mode = WAL;
-        CREATE TABLE IF NOT EXISTS dictionaryCards (
-          id INTEGER PRIMARY KEY NOT NULL,
-          card TEXT NOT NULL
-        );
-      `);
+        DROP TABLE IF EXISTS dictionaryCards;
+        DROP TABLE IF EXISTS settings;
+          CREATE TABLE IF NOT EXISTS dictionaryCards (
+            id INTEGER PRIMARY KEY NOT NULL,
+            card TEXT NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS settings (
+            setting TEXT PRIMARY KEY NOT NULL,
+            value TEXT
+          );
+          INSERT INTO settings (setting, value) VALUES 
+          ('AIModel', 'gemeni'),
+          ('openRouterToken', NULL),
+          ('storyContinuationLength', '800'),
+          ('educationLanguage', 'English'),
+          ('storyLanguageDifficulty', '2')
+          ON CONFLICT(setting) DO NOTHING;
+        `);
       }}
       options={{ useNewConnection: false }}
     >

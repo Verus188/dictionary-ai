@@ -1,31 +1,36 @@
 import { Button } from "@/src/components/button";
 import { setAIController } from "@/src/enteties/AIController";
+import { setSettingAction } from "@/src/model/actions";
 import {
+  AIModelAtom,
   educationLanguageAtom,
-  openRouterAIModelAtom,
   openRouterTokenAtom,
   storyContinuationLengthAtom,
   storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
-import { useState } from "react";
+import { useSQLiteContext } from "expo-sqlite";
+import { useRef, useState } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
 const SettingsScreen = reatomComponent(({ ctx }) => {
+  const db = useSQLiteContext();
   const [openRouterToken, setOpenRouterToken] = useState("");
   const token = ctx.spy(openRouterTokenAtom);
-  const AIModel = ctx.spy(openRouterAIModelAtom);
+  const AIModel = ctx.spy(AIModelAtom);
+  const tokenInputText = useRef<string>("");
 
   return (
     <ScrollView className="bg-main-bg p-4">
       <View className="flex flex-col gap-8">
+        {/* Выбор модели */}
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">OpenRouter AI model</Text>
-          <Picker<string | null>
+          <Picker<string>
             onValueChange={(value) => {
+              setSettingAction(ctx, db, AIModelAtom, "AIModel", value);
               setAIController(value);
-              openRouterAIModelAtom(ctx, value);
             }}
             style={{
               color: "white",
@@ -63,6 +68,7 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           </Picker>
         </View>
 
+        {/* Токен */}
         {AIModel !== "gemeni" && (
           <View className="flex gap-2">
             <Text className="text-lg text-text-color">OpenRouter token</Text>
@@ -70,14 +76,27 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
               className={`border border-text-color rounded ${
                 token === openRouterToken ? "text-blue-400" : "text-text-color"
               } py-1 px-1`}
-              onChangeText={setOpenRouterToken}
+              onChange={(e) => {
+                tokenInputText.current = e.nativeEvent.text;
+              }}
             />
-            <Button onPress={() => openRouterTokenAtom(ctx, openRouterToken)}>
+            <Button
+              onPress={() => {
+                setSettingAction(
+                  ctx,
+                  db,
+                  openRouterTokenAtom,
+                  "openRouterToken",
+                  tokenInputText.current
+                );
+              }}
+            >
               <Text className="text-text-color">Set</Text>
             </Button>
           </View>
         )}
 
+        {/* настройка длинны продолжений */}
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">
             Насколько длинные кусочки истории
@@ -85,7 +104,13 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           <Picker<string>
             selectedValue={ctx.spy(storyContinuationLengthAtom)}
             onValueChange={(value) => {
-              storyContinuationLengthAtom(ctx, value);
+              setSettingAction(
+                ctx,
+                db,
+                storyContinuationLengthAtom,
+                "storyContinuationLength",
+                value
+              );
             }}
             style={{
               color: "white",
@@ -103,11 +128,18 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           </Picker>
         </View>
 
+        {/* Выбор языка повествования */}
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">Story language</Text>
           <Picker<string>
             onValueChange={(value) => {
-              educationLanguageAtom(ctx, value);
+              setSettingAction(
+                ctx,
+                db,
+                educationLanguageAtom,
+                "educationlanguage",
+                value
+              );
             }}
             style={{
               color: "white",
@@ -135,6 +167,7 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           </Picker>
         </View>
 
+        {/* Сложность языка повествования */}
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">
             Сложность языка истории
@@ -142,7 +175,13 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           <Picker<string>
             selectedValue={ctx.spy(storyLanguageDifficultyAtom)}
             onValueChange={(value) => {
-              storyLanguageDifficultyAtom(ctx, value);
+              setSettingAction(
+                ctx,
+                db,
+                storyLanguageDifficultyAtom,
+                "storyLanguageDifficulty",
+                value
+              );
             }}
             style={{
               color: "white",
