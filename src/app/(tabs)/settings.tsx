@@ -1,4 +1,3 @@
-import { Button } from "@/src/components/button";
 import { setAIController } from "@/src/enteties/AIController";
 import { setSettingAction } from "@/src/model/actions";
 import {
@@ -11,12 +10,11 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
 import { useSQLiteContext } from "expo-sqlite";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
 const SettingsScreen = reatomComponent(({ ctx }) => {
   const db = useSQLiteContext();
-  const [openRouterToken, setOpenRouterToken] = useState("");
   const token = ctx.spy(openRouterTokenAtom);
   const AIModel = ctx.spy(AIModelAtom);
   const tokenInputText = useRef<string>("");
@@ -73,26 +71,18 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
           <View className="flex gap-2">
             <Text className="text-lg text-text-color">OpenRouter token</Text>
             <TextInput
-              className={`border border-text-color rounded ${
-                token === openRouterToken ? "text-blue-400" : "text-text-color"
-              } py-1 px-1`}
+              className={`border border-text-color rounded text-blue-400 py-1 px-1`}
               onChange={(e) => {
-                tokenInputText.current = e.nativeEvent.text;
-              }}
-            />
-            <Button
-              onPress={() => {
                 setSettingAction(
                   ctx,
                   db,
                   openRouterTokenAtom,
                   "openRouterToken",
-                  tokenInputText.current
+                  e.nativeEvent.text
                 );
               }}
-            >
-              <Text className="text-text-color">Set</Text>
-            </Button>
+              value={token}
+            />
           </View>
         )}
 
@@ -132,12 +122,13 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
         <View className="flex gap-2">
           <Text className="text-lg text-text-color">Story language</Text>
           <Picker<string>
+            selectedValue={ctx.spy(educationLanguageAtom)}
             onValueChange={(value) => {
               setSettingAction(
                 ctx,
                 db,
                 educationLanguageAtom,
-                "educationlanguage",
+                "educationLanguage",
                 value
               );
             }}
