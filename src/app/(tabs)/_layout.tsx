@@ -1,5 +1,4 @@
 import { SpinningIcon } from "@/src/components/spinning-icon";
-import { storage } from "@/src/enteties/strorage-controller";
 import { getColor } from "@/src/helpers/twColors";
 import { isCardModalVisibleAtom, isStoryLoadingAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -37,7 +36,6 @@ const TabLayout = reatomComponent(({ ctx }) => {
               className="px-4"
               onPress={() => {
                 isCardModalVisibleAtom(ctx, true);
-                console.log(storage.getAllCards());
               }}
             >
               <Text className="text-blue-500 capitalize">add</Text>
