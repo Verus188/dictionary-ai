@@ -24,10 +24,10 @@ const StoryScreen = reatomComponent(({ ctx }) => {
 
   // варинанты развития истории
   const continuationsInfo = ctx.spy(storyContinuationAtom);
+  const story = ctx.get(storyAtom);
 
   useEffect(() => {
     isStoryLoadingAtom(ctx, true);
-    const story = ctx.get(storyAtom);
     if (!continuationsInfo && story) {
       getStoryActions(
         story,
@@ -59,7 +59,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
     } else {
       isStoryLoadingAtom(ctx, false);
     }
-  }, []);
+  }, [continuationsInfo]);
 
   const handlePressButton = () => {
     isStoryLoadingAtom(ctx, true);

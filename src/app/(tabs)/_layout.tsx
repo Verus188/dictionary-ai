@@ -1,6 +1,12 @@
 import { SpinningIcon } from "@/src/components/spinning-icon";
 import { getColor } from "@/src/helpers/twColors";
-import { isCardModalVisibleAtom, isStoryLoadingAtom } from "@/src/model/atoms";
+import {
+  isCardModalVisibleAtom,
+  isStoryLoadingAtom,
+  storyAtom,
+  storyContinuationAtom,
+} from "@/src/model/atoms";
+import { plot1 } from "@/src/prompts/plot-1";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
 import { Tabs } from "expo-router";
@@ -56,13 +62,24 @@ const TabLayout = reatomComponent(({ ctx }) => {
           headerShown: true,
           title: "Story",
           headerRight: () => {
-            if (isStoryLoading) {
-              return (
-                <View className="flex justify-center items-center px-4">
-                  <SpinningIcon />
-                </View>
-              );
-            }
+            return (
+              <View className="flex flex-row gap-4 items-center">
+                <Pressable
+                  className="px-4"
+                  onPress={() => {
+                    storyContinuationAtom(ctx, null);
+                    storyAtom(ctx, plot1);
+                  }}
+                >
+                  <Text className="text-blue-500 capitalize">reset</Text>
+                </Pressable>
+                {isStoryLoading && (
+                  <View className="flex justify-center items-center px-4">
+                    <SpinningIcon />
+                  </View>
+                )}
+              </View>
+            );
           },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons

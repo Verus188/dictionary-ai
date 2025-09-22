@@ -1,12 +1,15 @@
+import { Button } from "@/src/components/button";
 import { setAIController } from "@/src/enteties/AIController";
 import { setSettingAction } from "@/src/model/actions";
 import {
   AIModelAtom,
   educationLanguageAtom,
   openRouterTokenAtom,
+  storyAtom,
   storyContinuationLengthAtom,
   storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
+import { plot1 } from "@/src/prompts/plot-1";
 import { Picker } from "@react-native-picker/picker";
 import { reatomComponent } from "@reatom/npm-react";
 import { useSQLiteContext } from "expo-sqlite";
@@ -199,6 +202,21 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
               </Picker>
             </View>
           </View>
+          <TextInput
+            multiline
+            value={ctx.spy(storyAtom) || ""}
+            className="h-40 text-orange-400 border border-text-color rounded py-1 px-1"
+            onChange={(e) => {
+              storyAtom(ctx, e.nativeEvent.text);
+            }}
+          />
+          <Button
+            onPress={() => {
+              storyAtom(ctx, plot1);
+            }}
+          >
+            Set default story
+          </Button>
         </View>
       </ScrollView>
     </View>
