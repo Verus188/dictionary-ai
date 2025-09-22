@@ -215,7 +215,7 @@ const SettingsScreen = reatomComponent(({ ctx }) => {
               storyAtom(ctx, plot1);
             }}
           >
-            Set default story
+            <Text className="text-text-color">Set default story</Text>
           </Button>
         </View>
       </ScrollView>

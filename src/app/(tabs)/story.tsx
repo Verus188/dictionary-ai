@@ -84,59 +84,42 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       });
   };
 
-  if (!continuationsInfo || !continuation) {
-    return (
-      <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
-        <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg"></ScrollView>
+  return (
+    <View className="flex-1 bg-main-bg items-center">
+      <View className="flex-1 w-full max-w-[1200px] items-center p-4 gap-4">
+        <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">
+          <Text className="text-text-color text-base px-4 py-2">
+            {continuation?.continuation || ""}
+          </Text>
+        </ScrollView>
         <View className="flex flex-1 w-full flex-row gap-4 justify-between">
           <Button
+            onPress={() => {
+              setContinuation(continuationsInfo?.continuation1 || null);
+              handlePressButton();
+            }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
             }`}
-          ></Button>
+          >
+            <Text className="text-text-color text-base overflow-hidden">
+              {continuation?.actions.action1 || ""}
+            </Text>
+          </Button>
           <Button
+            onPress={() => {
+              setContinuation(continuationsInfo?.continuation2 || null);
+              handlePressButton();
+            }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
             }`}
-          ></Button>
+          >
+            <Text className="text-text-color text-base overflow-hidden">
+              {continuation?.actions.action2 || ""}
+            </Text>
+          </Button>
         </View>
-      </View>
-    );
-  }
-  return (
-    <View className="flex-1 w-full items-center bg-main-bg p-4 gap-4">
-      <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">
-        <Text className="text-text-color text-base px-4 py-2">
-          {continuation.continuation}
-        </Text>
-      </ScrollView>
-      <View className="flex flex-1 w-full flex-row gap-4 justify-between">
-        <Button
-          onPress={() => {
-            setContinuation(continuationsInfo.continuation1);
-            handlePressButton();
-          }}
-          className={`flex-1 h-full ${
-            isStoryLoading ? "opacity-50 pointer-events-none" : ""
-          }`}
-        >
-          <Text className="text-text-color text-base overflow-hidden">
-            {continuation.actions.action1}
-          </Text>
-        </Button>
-        <Button
-          onPress={() => {
-            setContinuation(continuationsInfo.continuation2);
-            handlePressButton();
-          }}
-          className={`flex-1 h-full ${
-            isStoryLoading ? "opacity-50 pointer-events-none" : ""
-          }`}
-        >
-          <Text className="text-text-color text-base overflow-hidden">
-            {continuation.actions.action2}
-          </Text>
-        </Button>
       </View>
     </View>
   );
