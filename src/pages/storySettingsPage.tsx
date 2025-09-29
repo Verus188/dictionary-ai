@@ -39,7 +39,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
   const storyTags: StoryTagsType = storyTagsJson as StoryTagsType;
 
   return (
-    <View className="flex-1 bg-main-bg">
+    <View className="flex-1 bg-main-bg items-center">
       <ScrollView className="flex-1 w-full px-8 py-4 max-w-[800px]">
         <SafeAreaView className="flex-1">
           <KeyboardAvoidingView
