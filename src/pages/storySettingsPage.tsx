@@ -2,8 +2,12 @@ import { setAIController } from "@/src/enteties/AIController";
 import { setSettingAction } from "@/src/model/actions";
 import {
   AIModelAtom,
+  dictionaryCardsAtom,
+  displayedContinuationAtom,
   educationLanguageAtom,
+  isStoryLoadingAtom,
   openRouterTokenAtom,
+  storyContinuationAtom,
   storyContinuationLengthAtom,
   storyLanguageDifficultyAtom,
   storyPromptAtom,
@@ -25,6 +29,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../components/button";
 import storyTagsJson from "../data/story-tags.json";
+import { continueStory } from "../functions/continue-story";
+import { genereateStory } from "../functions/generate-story";
 
 export const StorySettingsPage = reatomComponent(({ ctx }) => {
   const db = useSQLiteContext();
@@ -248,9 +254,39 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                   />
                 </View>
 
+                {/* Главный герой */}
+                <View className="flex gap-2">
+                  <Text className="text-lg text-text-color">Главный герой</Text>
+                  <View className="rounded border border-white px-2">
+                    <Picker<string>
+                      selectedValue={ctx.spy(storyTagsAtoms.character)}
+                      onValueChange={(value) => {
+                        storyTagsAtoms.setting(ctx, value);
+                      }}
+                      className="py-1"
+                      style={{
+                        height: "auto",
+                        color: "white",
+                        backgroundColor: "transparent",
+                      }}
+                      dropdownIconColor="white"
+                      mode="dropdown"
+                    >
+                      <Picker.Item key={"none"} label={"none"} value={""} />
+                      {storyTags.characters.map((character) => (
+                        <Picker.Item
+                          key={character}
+                          label={character}
+                          value={character}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                </View>
+
                 {/* Жанры */}
                 <View className="flex gap-2">
-                  <Text className="text-lg text-text-color">Сеттинг</Text>
+                  <Text className="text-lg text-text-color">Жанры</Text>
                   <View className="flex gap-2 p-2">
                     {storyTags.genres.map((genre) => (
                       <View
@@ -391,7 +427,28 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                   </View>
                 </View>
               </View>
-              <Button className="py-2">
+              <Button
+                onPress={async () => {
+                  isStoryLoadingAtom(ctx, true);
+                  const story = await genereateStory(ctx);
+                  displayedContinuationAtom(ctx, story);
+                  const storyContinuation = await continueStory(
+                    story.continuation,
+                    story.actions,
+                    ctx.get(storyContinuationLengthAtom),
+                    ctx.get(educationLanguageAtom),
+                    ctx.get(storyLanguageDifficultyAtom),
+                    ctx.get(dictionaryCardsAtom)
+                  );
+                  storyContinuationAtom(ctx, storyContinuation);
+                  isStoryLoadingAtom(ctx, false);
+                }}
+                className={`py-2 ${
+                  ctx.spy(isStoryLoadingAtom)
+                    ? "opacity-50 pointer-events-none"
+                    : ""
+                }`}
+              >
                 <Text className="text-text-color text-lg">
                   Сгенерировать историю
                 </Text>

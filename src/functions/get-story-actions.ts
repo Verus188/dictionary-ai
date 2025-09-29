@@ -9,13 +9,12 @@ import {
 } from "../model/atoms";
 import { StoryActions } from "../model/types";
 import { getStoryActionsPrompt } from "../prompts/get-story-actions-prompt";
-import { storyActionsSystemPrompt } from "../prompts/story-actions-prompt";
+import { storyActionsSystemPrompt } from "../prompts/story-actions-system-prompt";
 
 /**
  * Генерирует два действия, которые может совершить читатель на основе переданного контекста
  * @param story - история
  * @param continuationSize  - размер продолжения истории
- * @param mood - настроение истории и ее особенности
  * @param language - язык истории
  * @param languageDifficulty - сложность повествования
  * @returns - json с двумя полями: action1 и action2

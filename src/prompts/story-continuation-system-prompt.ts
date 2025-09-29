@@ -1,4 +1,4 @@
-export const storySystemPrompt = `
+export const storyContinuationSystemPrompt = `
 
 You are a storyteller. Continue this story.
 

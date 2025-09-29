@@ -1,5 +1,9 @@
 import { atom, createCtx } from "@reatom/core";
-import { DictionaryCardInfo, StoryContinuationsInfo } from "./types";
+import {
+  DictionaryCardInfo,
+  StoryContinuation,
+  StoryContinuationsInfo,
+} from "./types";
 
 export const reatomCtx = createCtx();
 
@@ -20,6 +24,10 @@ export const storyAtom = atom<string | null>(null, "storyInfoAtom");
 export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
   null,
   "storyContinuationAtom"
+);
+export const displayedContinuationAtom = atom<StoryContinuation | null>(
+  null,
+  "displayedContinuationAtom"
 );
 
 export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
@@ -48,8 +56,8 @@ export const storyPromptAtom = atom<string>("", "storyPrompt");
 
 // Атомы настроек сюжета
 export const storyTagsAtoms = {
-  character: atom<string>("Fantasy", "storyTagCharacter"),
-  genres: atom<string[]>([], "storyTagGenre"),
+  character: atom<string>("Male protagonist", "storyTagCharacter"),
+  genres: atom<string[]>(["Fantasy"], "storyTagGenre"),
   setting: atom<string>("Middle Ages", "storyTagSetting"),
   plotMotif: atom<string>("Betrayal", "storyTagPlotMotif"),
   tone: atom<string>("Dark story", "storyTagTone"),

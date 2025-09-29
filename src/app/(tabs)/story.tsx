@@ -2,6 +2,7 @@ import { Button } from "@/src/components/button";
 import { continueStory } from "@/src/functions/continue-story";
 import {
   dictionaryCardsAtom,
+  displayedContinuationAtom,
   educationLanguageAtom,
   isStoryLoadingAtom,
   storyAtom,
@@ -12,101 +13,73 @@ import {
 import { StoryContinuation } from "@/src/model/types";
 import { StorySettingsPage } from "@/src/pages/storySettingsPage";
 import { reatomComponent } from "@reatom/npm-react";
-import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
-  // для отображения. История и возможные действия
-  const [continuation, setContinuation] = useState<StoryContinuation | null>(
-    null
-  );
+  // хранит текущий отрывок истории и варианты действий
+  const displayedContinuation = ctx.spy(displayedContinuationAtom);
+
+  // загрузка истории
   const isStoryLoading = ctx.spy(isStoryLoadingAtom);
 
   // варинанты развития истории
   const continuationsInfo = ctx.spy(storyContinuationAtom);
-  const story = ctx.get(storyAtom);
 
-  const handlePressButton = () => {
+  const handlePressButton = async (continuation?: StoryContinuation) => {
+    if (continuation) {
+      displayedContinuationAtom(ctx, continuation);
+    }
+
     isStoryLoadingAtom(ctx, true);
-    storyAtom(ctx, (prev) => prev + "\n" + continuation?.continuation);
+    storyAtom(ctx, (prev) => prev + "\n" + displayedContinuation?.continuation);
     const story = ctx.get(storyAtom);
 
     if (!story) return;
-    continueStory(
+    const storyContinuation = await continueStory(
       story,
-      continuation?.actions,
+      displayedContinuation?.actions,
       ctx.get(storyContinuationLengthAtom),
       ctx.get(educationLanguageAtom),
       ctx.get(storyLanguageDifficultyAtom),
       ctx.get(dictionaryCardsAtom)
-    )
-      .then((storyContinuation) => {
-        storyContinuationAtom(ctx, storyContinuation);
-      })
-      .finally(() => {
-        isStoryLoadingAtom(ctx, false);
-      });
+    );
+    storyContinuationAtom(ctx, storyContinuation);
+    isStoryLoadingAtom(ctx, false);
   };
 
-  // if (!continuation)
-  //   return (
-  //     <View className="flex-1 bg-main-bg justify-center items-center">
-  //       <Button
-  //         onPress={async () => {
-  //           isStoryLoadingAtom(ctx, true);
-  //           const actions = await getStoryActions(ctx);
-  //           setContinuation({
-  //             continuation: story || "",
-  //             actions,
-  //           });
-
-  //           isStoryLoadingAtom(ctx, false);
-  //         }}
-  //         className={`w-1/2 py-10 max-w-[600px] ${
-  //           isStoryLoading ? "opacity-50 pointer-events-none" : ""
-  //         }`}
-  //       >
-  //         <Text className="text-text-color text-center text-base overflow-hidden">
-  //           Start story
-  //         </Text>
-  //       </Button>
-  //     </View>
-  //   );
-  if (!continuation) return <StorySettingsPage />;
+  if (!displayedContinuation) return <StorySettingsPage />;
 
   return (
     <View className="flex-1 bg-main-bg items-center">
       <View className="flex-1 w-full max-w-[1200px] items-center p-4 gap-4">
         <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">
           <Text className="text-text-color text-base px-4 py-2">
-            {continuation?.continuation || ""}
+            {displayedContinuation?.continuation || ""}
           </Text>
         </ScrollView>
         <View className="flex flex-1 w-full flex-row gap-4 justify-between">
           <Button
             onPress={() => {
-              setContinuation(continuationsInfo?.continuation1 || null);
-              handlePressButton();
+              handlePressButton(continuationsInfo?.continuation1);
             }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
             }`}
           >
             <Text className="text-text-color text-base overflow-hidden">
-              {continuation?.actions.action1 || ""}
+              {displayedContinuation?.actions.action1 || ""}
             </Text>
           </Button>
           <Button
             onPress={() => {
-              setContinuation(continuationsInfo?.continuation2 || null);
-              handlePressButton();
+              handlePressButton(continuationsInfo?.continuation2);
             }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
             }`}
           >
             <Text className="text-text-color text-base overflow-hidden">
-              {continuation?.actions.action2 || ""}
+              {displayedContinuation?.actions.action2 || ""}
             </Text>
           </Button>
         </View>

@@ -5,7 +5,7 @@ import {
   StoryContinuationsInfo,
 } from "../model/types";
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
-import { storySystemPrompt } from "../prompts/story-system-prompt";
+import { storyContinuationSystemPrompt } from "../prompts/story-continuation-system-prompt";
 
 /**
  * Генерирует продложение истории на основе переданного контекста
@@ -29,7 +29,7 @@ export const continueStory = async (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
         story,
-        storySystemPrompt,
+        storyContinuationSystemPrompt,
         actions,
         continuationSize,
         language,
