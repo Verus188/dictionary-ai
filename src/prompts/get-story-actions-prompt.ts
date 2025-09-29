@@ -1,35 +1,52 @@
+import { DictionaryCardInfo } from "../model/types";
+
 /**
- * Prompt для начала сюжета. Создает actions и возможные продолжения.
+ * Возвращает промпт для составления продолжения истории
+ * @param story - история, которую надо продолжить
+ * @param systemPrompt - системный промпт. Например, промт генерации продолжения истории или генерации действий
+ * @param action - действие, которое выполняет главный герой
+ * @param continuationSize - размер продолжения
+ * @param language - какой язык используется для продолжения
+ * @param languageDifficulty - насколько сложная лексика используется
+ * @example getStoryContinuationPrompt('какая то история...', 'открыл дверь','история должна быть абсурдная', 'вся история должна быть на французском', 'используй детскую лексику')
  */
-export const getStoryActionsPrompt = `
-You will get a story. Think of actions that the main character can perform for this story.
+export const getStoryActionsPrompt = (
+  story: string,
+  systemPrompt: string,
+  continuationSize?: string,
+  language?: string,
+  languageDifficulty?: string,
+  dictionaryCards?: DictionaryCardInfo[]
+) => {
+  const languagePrompt = language
+    ? "The actions have to be in " + language
+    : "";
+  const continuationSizePrompt = continuationSize
+    ? `The continuation of the story should be about ${continuationSize} characters.`
+    : "";
 
-The answer must be in JSON format.
+  const languageDifficultyPrompt = languageDifficulty
+    ? `Use the language complexity level = ${languageDifficulty}, where 1 is the simplest and 6 is the most complex.
+	1.	Very simple language — short sentences, basic words, minimal descriptions (suitable for children).
+	2.	Simple language — slightly longer sentences, easy vocabulary, simple imagery.
+	3.	Intermediate level — everyday conversational style, clear language, a moderate amount of detail.
+	4.	Advanced level — more complex sentences, diverse vocabulary, metaphors and descriptions.
+	5.	Complex level — rich literary language, rare words, long sentences, sophisticated structures.
+	6.	Very complex language — almost academic style, high density of metaphors and literary devices, abundance of details.`
+    : "";
 
-The JSON must contain only two fields: action1 and action2.
+  const dictionaryCardsPrompt = dictionaryCards
+    ? `Use the following words and phrases in continuation: ${dictionaryCards
+        .map((card) => card.card)
+        .join(", ")}`
+    : "";
 
-The answer must contain only JSON.
-
-The field “action1: "..."” is the first action that the main character might performs.
-The field “action1: "..."” is the second action that the main character might performs.
-The action1 and action2 must describe what the main character is about to do. The description of an action must be no more than 5–6 words.
-
-For example,
-
-request:
-"You woke up on a wooden bench in the tavern, where last night you only wanted to have a mug of ale after work. Your head was splitting, and your mouth was so dry it felt like you’d been drinking sand. A few people were still in the hall: someone was finishing their stew, someone else was playing dice.
-At the next table, two men were talking, glancing at you from time to time. When you stirred, one of them smirked and said loudly enough for everyone to hear:
-
-— Well, look who’s awake. Maybe now he’ll explain who’s paying for all this mess.
-
-The second added, without taking his eyes off you:
-
-— And for the broken door, too. You raised your head and looked around. The mess was real: broken mugs, an overturned table, and wood splinters on the floor, clearly from the doorframe. It all looked as though a storm had swept through the place overnight.\n\n“Wait,” you croaked, trying to get to your feet, “what mess are you talking about?”\n\nThe two men exchanged glances. The bigger one crossed his arms over his chest and said:\n\n“Don’t play dumb. Last night you came in with a group, started singing, arguing, then someone hit someone else with a mug… And it all ended with you being the first to fly through the door. Along with the door.”\n\nLaughter rippled through the hall. The dice players even stopped rolling, clearly enjoying the show.\n\nYou tried to remember—but memory hit a foggy wall. Only scraps came back: laughter, music, the smell of roasted meat… and someone’s rough shove against your shoulder.\n\n“So,” the man continued, stepping closer, “either you pay, or the innkeeper will hand you over to the city guard.”"
-
-response:
-JSON
-{
-    action1: "Offer to fix the damages",
-    action2: "Deny everything and demand proof"
-}
-`;
+  return [
+    story,
+    systemPrompt,
+    continuationSizePrompt,
+    languagePrompt,
+    languageDifficultyPrompt,
+    dictionaryCardsPrompt,
+  ].join("\n");
+};

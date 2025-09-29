@@ -3,9 +3,9 @@ import { DictionaryCardInfo, StoryActions } from "../model/types";
 /**
  * Возвращает промпт для составления продолжения истории
  * @param story - история, которую надо продолжить
+ * @param systemPrompt - системный промпт. Например, промт генерации продолжения истории или генерации действий
  * @param action - действие, которое выполняет главный герой
  * @param continuationSize - размер продолжения
- * @param mood - настроение истории. Например, абсурдная, смешная, в виде стихотворения и тд
  * @param language - какой язык используется для продолжения
  * @param languageDifficulty - насколько сложная лексика используется
  * @example getStoryContinuationPrompt('какая то история...', 'открыл дверь','история должна быть абсурдная', 'вся история должна быть на французском', 'используй детскую лексику')
@@ -15,7 +15,6 @@ export const getStoryContinuationPrompt = (
   systemPrompt: string,
   actions?: StoryActions,
   continuationSize?: string,
-  mood?: string,
   language?: string,
   languageDifficulty?: string,
   dictionaryCards?: DictionaryCardInfo[]
@@ -39,7 +38,9 @@ export const getStoryContinuationPrompt = (
     : "";
 
   const dictionaryCardsPrompt = dictionaryCards
-    ? `Use the following words and phrases in continuation: ${dictionaryCards.map((card) => card.card).join(", ")}`
+    ? `Use the following words and phrases in continuation: ${dictionaryCards
+        .map((card) => card.card)
+        .join(", ")}`
     : "";
 
   return [
@@ -47,7 +48,6 @@ export const getStoryContinuationPrompt = (
     actionsPrompt,
     systemPrompt,
     continuationSizePrompt,
-    mood,
     languagePrompt,
     languageDifficultyPrompt,
     dictionaryCardsPrompt,

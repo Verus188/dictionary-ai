@@ -1,6 +1,6 @@
 import { Button } from "@/src/components/button";
-import { continueStory } from "@/src/helpers/continue-story";
-import { getStoryActions } from "@/src/helpers/init-story";
+import { continueStory } from "@/src/functions/continue-story";
+import { getStoryActions } from "@/src/functions/get-story-actions";
 import {
   dictionaryCardsAtom,
   educationLanguageAtom,
@@ -12,7 +12,7 @@ import {
 } from "@/src/model/atoms";
 import { StoryContinuation } from "@/src/model/types";
 import { reatomComponent } from "@reatom/npm-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
@@ -26,41 +26,6 @@ const StoryScreen = reatomComponent(({ ctx }) => {
   const continuationsInfo = ctx.spy(storyContinuationAtom);
   const story = ctx.get(storyAtom);
 
-  useEffect(() => {
-    isStoryLoadingAtom(ctx, true);
-    if (!continuationsInfo && story) {
-      getStoryActions(
-        story,
-        ctx.get(storyContinuationLengthAtom),
-        undefined,
-        ctx.get(educationLanguageAtom),
-        ctx.get(storyLanguageDifficultyAtom)
-      ).then((storyInfo) => {
-        setContinuation({
-          continuation: story,
-          actions: storyInfo,
-        });
-
-        continueStory(
-          story,
-          continuation?.actions,
-          ctx.get(storyContinuationLengthAtom),
-          undefined,
-          ctx.get(educationLanguageAtom),
-          ctx.get(storyLanguageDifficultyAtom)
-        )
-          .then((storyContinuation) => {
-            storyContinuationAtom(ctx, storyContinuation);
-          })
-          .finally(() => {
-            isStoryLoadingAtom(ctx, false);
-          });
-      });
-    } else {
-      isStoryLoadingAtom(ctx, false);
-    }
-  }, [continuationsInfo]);
-
   const handlePressButton = () => {
     isStoryLoadingAtom(ctx, true);
     storyAtom(ctx, (prev) => prev + "\n" + continuation?.continuation);
@@ -71,7 +36,6 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       story,
       continuation?.actions,
       ctx.get(storyContinuationLengthAtom),
-      undefined,
       ctx.get(educationLanguageAtom),
       ctx.get(storyLanguageDifficultyAtom),
       ctx.get(dictionaryCardsAtom)
@@ -83,6 +47,31 @@ const StoryScreen = reatomComponent(({ ctx }) => {
         isStoryLoadingAtom(ctx, false);
       });
   };
+
+  if (!continuation)
+    return (
+      <View className="flex-1 bg-main-bg justify-center items-center">
+        <Button
+          onPress={async () => {
+            isStoryLoadingAtom(ctx, true);
+            const actions = await getStoryActions(ctx);
+            setContinuation({
+              continuation: story || "",
+              actions,
+            });
+
+            isStoryLoadingAtom(ctx, false);
+          }}
+          className={`w-1/2 py-10 max-w-[600px] ${
+            isStoryLoading ? "opacity-50 pointer-events-none" : ""
+          }`}
+        >
+          <Text className="text-text-color text-center text-base overflow-hidden">
+            Start story
+          </Text>
+        </Button>
+      </View>
+    );
 
   return (
     <View className="flex-1 bg-main-bg items-center">

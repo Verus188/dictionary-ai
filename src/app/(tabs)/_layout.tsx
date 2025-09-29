@@ -1,5 +1,5 @@
 import { SpinningIcon } from "@/src/components/spinning-icon";
-import { getColor } from "@/src/helpers/twColors";
+import { getColor } from "@/src/helpers/tw-colors";
 import {
   isCardModalVisibleAtom,
   isStoryLoadingAtom,

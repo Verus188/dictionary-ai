@@ -7,11 +7,20 @@ import {
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
 import { storySystemPrompt } from "../prompts/story-system-prompt";
 
+/**
+ * Генерирует продложение истории на основе переданного контекста
+ * @param story - история
+ * @param actions - действия, которые может совершить читатель
+ * @param continuationSize - размер продолжения
+ * @param language - язык повествования
+ * @param languageDifficulty - сложность языка повествования
+ * @param dictionaryCards - карточки из словаря, которые будут использоваться в истории
+ * @returns - продолжение истории в json. Содержит 2 варианта продолжения истории для выбранных actions и 2 actions для каждого из продолжений
+ */
 export const continueStory = async (
   story: string,
   actions?: StoryActions,
   continuationSize?: string,
-  mood?: string,
   language?: string,
   languageDifficulty?: string,
   dictionaryCards?: DictionaryCardInfo[]
@@ -23,7 +32,6 @@ export const continueStory = async (
         storySystemPrompt,
         actions,
         continuationSize,
-        mood,
         language,
         languageDifficulty,
         dictionaryCards
