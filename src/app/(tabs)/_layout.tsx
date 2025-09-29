@@ -1,12 +1,6 @@
 import { SpinningIcon } from "@/src/components/spinning-icon";
 import { getColor } from "@/src/helpers/tw-colors";
-import {
-  isCardModalVisibleAtom,
-  isStoryLoadingAtom,
-  storyAtom,
-  storyContinuationAtom,
-} from "@/src/model/atoms";
-import { plot1 } from "@/src/prompts/plot-1";
+import { isCardModalVisibleAtom, isStoryLoadingAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { reatomComponent } from "@reatom/npm-react";
 import { Tabs } from "expo-router";
@@ -64,13 +58,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
           headerRight: () => {
             return (
               <View className="flex flex-row gap-4 items-center">
-                <Pressable
-                  className="px-4"
-                  onPress={() => {
-                    storyContinuationAtom(ctx, null);
-                    storyAtom(ctx, plot1);
-                  }}
-                >
+                <Pressable className="px-4" onPress={() => {}}>
                   <Text className="text-blue-500 capitalize">reset</Text>
                 </Pressable>
                 {isStoryLoading && (
@@ -86,19 +74,6 @@ const TabLayout = reatomComponent(({ ctx }) => {
               name={
                 focused ? "game-controller-sharp" : "game-controller-outline"
               }
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "settings-sharp" : "settings-outline"}
               color={color}
               size={24}
             />

@@ -12,6 +12,8 @@ import {
   storyLanguageDifficultyAtom,
 } from "../model/atoms";
 
+// DELETE FROM dictionaryCards;
+// DELETE FROM settings;
 export default function RootLayout() {
   return (
     <SQLiteProvider

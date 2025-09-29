@@ -1,5 +1,4 @@
 import { atom, createCtx } from "@reatom/core";
-import { plot1 } from "../prompts/plot-1";
 import { DictionaryCardInfo, StoryContinuationsInfo } from "./types";
 
 export const reatomCtx = createCtx();
@@ -15,7 +14,7 @@ export const isCardModalVisibleAtom = atom<boolean>(
 );
 
 // хранит всю истории и промпт сюжета
-export const storyAtom = atom<string | null>(plot1, "storyInfoAtom");
+export const storyAtom = atom<string | null>(null, "storyInfoAtom");
 
 // хранит варианты развития истории
 export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
@@ -25,7 +24,7 @@ export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
 
 export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
 
-// Атом настроек
+// Атомы настроек
 /** Токен для openRouter */
 export const openRouterTokenAtom = atom<string>("", "openRouterTokenAtom");
 /** Выбранна модель нейросети для openRouter */
@@ -45,3 +44,14 @@ export const storyLanguageDifficultyAtom = atom<string>(
   "2",
   "storyLanguageDifficultyAtom"
 );
+export const storyPromptAtom = atom<string>("", "storyPrompt");
+
+// Атомы настроек сюжета
+export const storyTagsAtoms = {
+  character: atom<string>("Fantasy", "storyTagCharacter"),
+  genres: atom<string[]>([], "storyTagGenre"),
+  setting: atom<string>("Middle Ages", "storyTagSetting"),
+  plotMotif: atom<string>("Betrayal", "storyTagPlotMotif"),
+  tone: atom<string>("Dark story", "storyTagTone"),
+  narrativeStyle: atom<string>("First person", "storyTagNarrativeStyle"),
+};

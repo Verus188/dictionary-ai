@@ -1,6 +1,5 @@
 import { Button } from "@/src/components/button";
 import { continueStory } from "@/src/functions/continue-story";
-import { getStoryActions } from "@/src/functions/get-story-actions";
 import {
   dictionaryCardsAtom,
   educationLanguageAtom,
@@ -11,6 +10,7 @@ import {
   storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
 import { StoryContinuation } from "@/src/model/types";
+import { StorySettingsPage } from "@/src/pages/storySettingsPage";
 import { reatomComponent } from "@reatom/npm-react";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -48,30 +48,31 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       });
   };
 
-  if (!continuation)
-    return (
-      <View className="flex-1 bg-main-bg justify-center items-center">
-        <Button
-          onPress={async () => {
-            isStoryLoadingAtom(ctx, true);
-            const actions = await getStoryActions(ctx);
-            setContinuation({
-              continuation: story || "",
-              actions,
-            });
+  // if (!continuation)
+  //   return (
+  //     <View className="flex-1 bg-main-bg justify-center items-center">
+  //       <Button
+  //         onPress={async () => {
+  //           isStoryLoadingAtom(ctx, true);
+  //           const actions = await getStoryActions(ctx);
+  //           setContinuation({
+  //             continuation: story || "",
+  //             actions,
+  //           });
 
-            isStoryLoadingAtom(ctx, false);
-          }}
-          className={`w-1/2 py-10 max-w-[600px] ${
-            isStoryLoading ? "opacity-50 pointer-events-none" : ""
-          }`}
-        >
-          <Text className="text-text-color text-center text-base overflow-hidden">
-            Start story
-          </Text>
-        </Button>
-      </View>
-    );
+  //           isStoryLoadingAtom(ctx, false);
+  //         }}
+  //         className={`w-1/2 py-10 max-w-[600px] ${
+  //           isStoryLoading ? "opacity-50 pointer-events-none" : ""
+  //         }`}
+  //       >
+  //         <Text className="text-text-color text-center text-base overflow-hidden">
+  //           Start story
+  //         </Text>
+  //       </Button>
+  //     </View>
+  //   );
+  if (!continuation) return <StorySettingsPage />;
 
   return (
     <View className="flex-1 bg-main-bg items-center">

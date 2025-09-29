@@ -1,0 +1,34 @@
+{
+  "characters": ["Male protagonist", "Female protagonist", "Antihero"],
+  "genres": [
+    "Fantasy",
+    "Science fiction",
+    "Romance",
+    "Horror",
+    "Comedy",
+    "Detective"
+  ],
+  "settings": [
+    "Middle Ages",
+    "Modern times",
+    "Future",
+    "Parallel world",
+    "Space station"
+  ],
+  "plotMotifs": [
+    "Chosen hero",
+    "Artifact quest",
+    "Revenge",
+    "Time travel",
+    "Betrayal",
+    "Love triangle"
+  ],
+  "narrativeStyle": [
+    "First person",
+    "Third person",
+    "Villain's perspective",
+    "Chronicle",
+    "Nonlinear narration"
+  ],
+  "tone": ["Bright story", "Dark story", "Ironic story", "Inspiring", "Scary"]
+}

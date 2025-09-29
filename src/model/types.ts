@@ -21,3 +21,12 @@ export type InitStoryInfo = {
   story: string;
   continuationsInfo: StoryContinuationsInfo;
 };
+
+export type StoryTagsType = {
+  characters: string[];
+  genres: string[];
+  settings: string[];
+  plotMotifs: string[];
+  tone: string[];
+  narrativeStyle: string[];
+};
