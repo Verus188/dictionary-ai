@@ -2,7 +2,7 @@ import { AIController } from "../enteties/AIController";
 import {
   DictionaryCardInfo,
   StoryActions,
-  StoryContinuationsInfo,
+  StoryChunkVariants,
 } from "../model/types";
 import { getStoryContinuationPrompt } from "../prompts/get-story-continuation-prompt";
 import { storyContinuationSystemPrompt } from "../prompts/story-continuation-system-prompt";
@@ -24,7 +24,7 @@ export const continueStory = async (
   language?: string,
   languageDifficulty?: string,
   dictionaryCards?: DictionaryCardInfo[]
-): Promise<StoryContinuationsInfo> => {
+): Promise<StoryChunkVariants> => {
   const response = (
     await AIController.generateAIText(
       getStoryContinuationPrompt(
@@ -42,20 +42,20 @@ export const continueStory = async (
     .trim();
 
   try {
-    return JSON.parse(response) as StoryContinuationsInfo;
+    return JSON.parse(response) as StoryChunkVariants;
   } catch (error) {
     console.log("response", response);
     console.error(error);
     return {
-      continuation1: {
-        continuation: "Error",
+      chunk1: {
+        chunk: "Error",
         actions: {
           action1: "Error",
           action2: "Error",
         },
       },
-      continuation2: {
-        continuation: "Error",
+      chunk2: {
+        chunk: "Error",
         actions: {
           action1: "Error",
           action2: "Error",

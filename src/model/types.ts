@@ -7,19 +7,19 @@ export type StoryActions = {
   action1: string;
   action2: string;
 };
-export type StoryContinuation = {
-  continuation: string;
+export type StoryChunk = {
+  chunk: string;
   actions: StoryActions;
 };
 
-export type StoryContinuationsInfo = {
-  continuation1: StoryContinuation;
-  continuation2: StoryContinuation;
+export type StoryChunkVariants = {
+  chunk1: StoryChunk;
+  chunk2: StoryChunk;
 };
 
 export type InitStoryInfo = {
   story: string;
-  continuationsInfo: StoryContinuationsInfo;
+  chunks: StoryChunkVariants;
 };
 
 export type StoryTagsType = {

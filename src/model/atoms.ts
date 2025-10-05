@@ -1,9 +1,6 @@
+import { reatomResource } from "@reatom/async";
 import { atom, createCtx } from "@reatom/core";
-import {
-  DictionaryCardInfo,
-  StoryContinuation,
-  StoryContinuationsInfo,
-} from "./types";
+import { DictionaryCardInfo, StoryChunk } from "./types";
 
 export const reatomCtx = createCtx();
 
@@ -18,41 +15,42 @@ export const isCardModalVisibleAtom = atom<boolean>(
 );
 
 // хранит всю истории и промпт сюжета
-export const storyAtom = atom<string | null>(null, "storyInfoAtom");
+export const storyAtom = atom<string | null>(null, "storyAtom");
 
-// хранит варианты развития истории
-export const storyContinuationAtom = atom<StoryContinuationsInfo | null>(
+// // хранит варианты развития истории
+// export const storyContinuationAtom = atom<StoryChunkVariants | null>(
+//   null,
+//   "storyContinuationAtom"
+// );
+
+export const displayedChunkAtom = atom<StoryChunk | null>(
   null,
-  "storyContinuationAtom"
-);
-export const displayedContinuationAtom = atom<StoryContinuation | null>(
-  null,
-  "displayedContinuationAtom"
+  "displayedChunkAtom"
 );
 
-export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
+// export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
+
+export const storyPartResource = reatomResource(async (ctx) => {
+  ctx.spy(storyAtom);
+  ctx.spy(displayedChunkAtom);
+
+  return await ctx.schedule(() => {});
+}, "storyPartAtom");
 
 // Атомы настроек
-/** Токен для openRouter */
-export const openRouterTokenAtom = atom<string>("", "openRouterTokenAtom");
-/** Выбранна модель нейросети для openRouter */
-export const AIModelAtom = atom<string>("gemeni", "openRouterAIModelAtom");
-/** язык, который изучается пользователем */
-export const educationLanguageAtom = atom<string>(
-  "English",
-  "educationLanguageAtom"
-);
-/** насколько длинные варианты развития истории */
-export const storyContinuationLengthAtom = atom<string>(
-  "800",
-  "storyContinuationLengthAtom"
-);
-/** насколько сложный язык истории */
-export const storyLanguageDifficultyAtom = atom<string>(
-  "2",
-  "storyLanguageDifficultyAtom"
-);
-export const storyPromptAtom = atom<string>("", "storyPrompt");
+export const storySettingsAtoms = {
+  /** Токен для openRouter */
+  openRouterToken: atom<string>("", "openRouterTokenAtom"),
+  /** Выбранна модель нейросети */
+  AIModel: atom<string>("gemeni", "AIModelAtom"),
+  /** язык, который изучается пользователем */
+  educationLanguage: atom<string>("English", "educationLanguageAtom"),
+  /** насколько длинные куски истории */
+  partLength: atom<string>("800", "storyContinuationLengthAtom"),
+  /** насколько сложный язык истории */
+  storyLanguageDifficulty: atom<string>("2", "storyLanguageDifficultyAtom"),
+  storyPrompt: atom<string>("", "storyPrompt"),
+};
 
 // Атомы настроек сюжета
 export const storyTagsAtoms = {

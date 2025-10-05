@@ -8,11 +8,11 @@ import {
   storyPromptAtom,
   storyTagsAtoms,
 } from "../model/atoms";
-import { StoryContinuation } from "../model/types";
+import { StoryChunk } from "../model/types";
 import { getStoryInitializationPrompt } from "../prompts/get-story-initialization-prompt";
 import { storyInitializationSystemPrompt } from "../prompts/story-initialization-system-prompt";
 
-export const genereateStory = async (ctx: Ctx): Promise<StoryContinuation> => {
+export const genereateStory = async (ctx: Ctx): Promise<StoryChunk> => {
   const response = (
     await AIController.generateAIText(
       getStoryInitializationPrompt(
@@ -35,12 +35,12 @@ export const genereateStory = async (ctx: Ctx): Promise<StoryContinuation> => {
     .trim();
 
   try {
-    return JSON.parse(response) as StoryContinuation;
+    return JSON.parse(response) as StoryChunk;
   } catch (error) {
     console.log("response", response);
     console.error(error);
     return {
-      continuation: "Error",
+      chunk: "Error",
       actions: {
         action1: "Error",
         action2: "Error",

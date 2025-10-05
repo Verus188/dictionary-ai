@@ -1,7 +1,7 @@
 import { SpinningIcon } from "@/src/components/spinning-icon";
 import { getColor } from "@/src/helpers/tw-colors";
 import {
-  displayedContinuationAtom,
+  displayedChunkAtom,
   isCardModalVisibleAtom,
   isStoryLoadingAtom,
   storyAtom,
@@ -67,7 +67,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
                 <Pressable
                   className="px-4"
                   onPress={() => {
-                    displayedContinuationAtom(ctx, null);
+                    displayedChunkAtom(ctx, null);
                     storyContinuationAtom(ctx, null);
                     storyAtom(ctx, null);
                     isStoryLoadingAtom(ctx, false);

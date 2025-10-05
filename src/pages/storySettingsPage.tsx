@@ -3,7 +3,7 @@ import { setSettingAction } from "@/src/model/actions";
 import {
   AIModelAtom,
   dictionaryCardsAtom,
-  displayedContinuationAtom,
+  displayedChunkAtom,
   educationLanguageAtom,
   isStoryLoadingAtom,
   openRouterTokenAtom,
@@ -431,9 +431,9 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                 onPress={async () => {
                   isStoryLoadingAtom(ctx, true);
                   const story = await genereateStory(ctx);
-                  displayedContinuationAtom(ctx, story);
+                  displayedChunkAtom(ctx, story);
                   const storyContinuation = await continueStory(
-                    story.continuation,
+                    story.chunk,
                     story.actions,
                     ctx.get(storyContinuationLengthAtom),
                     ctx.get(educationLanguageAtom),

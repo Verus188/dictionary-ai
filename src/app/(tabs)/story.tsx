@@ -2,7 +2,7 @@ import { Button } from "@/src/components/button";
 import { continueStory } from "@/src/functions/continue-story";
 import {
   dictionaryCardsAtom,
-  displayedContinuationAtom,
+  displayedChunkAtom,
   educationLanguageAtom,
   isStoryLoadingAtom,
   storyAtom,
@@ -10,14 +10,14 @@ import {
   storyContinuationLengthAtom,
   storyLanguageDifficultyAtom,
 } from "@/src/model/atoms";
-import { StoryContinuation } from "@/src/model/types";
+import { StoryChunk } from "@/src/model/types";
 import { StorySettingsPage } from "@/src/pages/storySettingsPage";
 import { reatomComponent } from "@reatom/npm-react";
 import { ScrollView, Text, View } from "react-native";
 
 const StoryScreen = reatomComponent(({ ctx }) => {
   // хранит текущий отрывок истории и варианты действий
-  const displayedContinuation = ctx.spy(displayedContinuationAtom);
+  const displayedContinuation = ctx.spy(displayedChunkAtom);
 
   // загрузка истории
   const isStoryLoading = ctx.spy(isStoryLoadingAtom);
@@ -25,13 +25,13 @@ const StoryScreen = reatomComponent(({ ctx }) => {
   // варинанты развития истории
   const continuationsInfo = ctx.spy(storyContinuationAtom);
 
-  const handlePressButton = async (continuation?: StoryContinuation) => {
+  const handlePressButton = async (continuation?: StoryChunk) => {
     if (continuation) {
-      displayedContinuationAtom(ctx, continuation);
+      displayedChunkAtom(ctx, continuation);
     }
 
     isStoryLoadingAtom(ctx, true);
-    storyAtom(ctx, (prev) => prev + "\n" + displayedContinuation?.continuation);
+    storyAtom(ctx, (prev) => prev + "\n" + displayedContinuation?.chunk);
     const story = ctx.get(storyAtom);
 
     if (!story) return;
@@ -54,13 +54,13 @@ const StoryScreen = reatomComponent(({ ctx }) => {
       <View className="flex-1 w-full max-w-[1200px] items-center p-4 gap-4">
         <ScrollView className="bg-tabs-bg w-full h-[60%] border border-tabs-border-color rounded-lg">
           <Text className="text-text-color text-base px-4 py-2">
-            {displayedContinuation?.continuation || ""}
+            {displayedContinuation?.chunk || ""}
           </Text>
         </ScrollView>
         <View className="flex flex-1 w-full flex-row gap-4 justify-between">
           <Button
             onPress={() => {
-              handlePressButton(continuationsInfo?.continuation1);
+              handlePressButton(continuationsInfo?.chunk1);
             }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
@@ -72,7 +72,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
           </Button>
           <Button
             onPress={() => {
-              handlePressButton(continuationsInfo?.continuation2);
+              handlePressButton(continuationsInfo?.chunk2);
             }}
             className={`flex-1 h-full ${
               isStoryLoading ? "opacity-50 pointer-events-none" : ""
