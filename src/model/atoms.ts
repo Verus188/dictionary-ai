@@ -1,6 +1,7 @@
-import { reatomResource } from "@reatom/async";
+import { reatomResource, withDataAtom, withStatusesAtom } from "@reatom/async";
 import { atom, createCtx } from "@reatom/core";
-import { DictionaryCardInfo, StoryChunk } from "./types";
+import { generateStoryChunksAction } from "./actions";
+import { DictionaryCardInfo, StoryChunk, StoryChunkVariants } from "./types";
 
 export const reatomCtx = createCtx();
 
@@ -17,25 +18,21 @@ export const isCardModalVisibleAtom = atom<boolean>(
 // хранит всю истории и промпт сюжета
 export const storyAtom = atom<string | null>(null, "storyAtom");
 
-// // хранит варианты развития истории
-// export const storyContinuationAtom = atom<StoryChunkVariants | null>(
-//   null,
-//   "storyContinuationAtom"
-// );
+export const storyChunkAtom = atom<StoryChunk | null>(null, "storyChunkAtom");
 
-export const displayedChunkAtom = atom<StoryChunk | null>(
+export const nextStoryChunksVariantsAtom = atom<StoryChunkVariants | null>(
   null,
-  "displayedChunkAtom"
+  "nextStoryChunksVariantsAtom"
 );
 
-// export const isStoryLoadingAtom = atom<boolean>(false, "isStoryLoadingAtom");
+export const nextStoryChunksResource = reatomResource(async (ctx) => {
+  const story = ctx.spy(storyAtom);
+  if (!story) return null;
 
-export const storyPartResource = reatomResource(async (ctx) => {
-  ctx.spy(storyAtom);
-  ctx.spy(displayedChunkAtom);
-
-  return await ctx.schedule(() => {});
-}, "storyPartAtom");
+  return ctx.schedule(() => {
+    return generateStoryChunksAction(ctx);
+  });
+}, "nextStoryChunksResource").pipe(withDataAtom(null), withStatusesAtom());
 
 // Атомы настроек
 export const storySettingsAtoms = {
@@ -46,7 +43,7 @@ export const storySettingsAtoms = {
   /** язык, который изучается пользователем */
   educationLanguage: atom<string>("English", "educationLanguageAtom"),
   /** насколько длинные куски истории */
-  partLength: atom<string>("800", "storyContinuationLengthAtom"),
+  chunkLength: atom<string>("800", "storyChunkLengthAtom"),
   /** насколько сложный язык истории */
   storyLanguageDifficulty: atom<string>("2", "storyLanguageDifficultyAtom"),
   storyPrompt: atom<string>("", "storyPrompt"),

@@ -3,13 +3,13 @@ export type DictionaryCardInfo = {
   id: string;
 };
 
-export type StoryActions = {
+export type ChunkActions = {
   action1: string;
   action2: string;
 };
 export type StoryChunk = {
-  chunk: string;
-  actions: StoryActions;
+  text: string;
+  actions: ChunkActions;
 };
 
 export type StoryChunkVariants = {

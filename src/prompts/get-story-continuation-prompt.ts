@@ -1,4 +1,4 @@
-import { DictionaryCardInfo, StoryActions } from "../model/types";
+import { ChunkActions, DictionaryCardInfo } from "../model/types";
 
 /**
  * Возвращает промпт для составления продолжения истории
@@ -13,7 +13,7 @@ import { DictionaryCardInfo, StoryActions } from "../model/types";
 export const getStoryContinuationPrompt = (
   story: string,
   systemPrompt: string,
-  actions?: StoryActions,
+  actions?: ChunkActions,
   continuationSize?: string,
   language?: string,
   languageDifficulty?: string,
