@@ -29,6 +29,9 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.8
         version: 7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
+      '@reatom/async':
+        specifier: ^3.16.8
+        version: 3.16.8
       '@reatom/core':
         specifier: ^3.10.1
         version: 3.10.1

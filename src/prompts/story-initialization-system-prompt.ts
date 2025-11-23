@@ -4,9 +4,9 @@ You are a storyteller. Write a story.
 
 The answer must be in JSON format.
 
-The answer must contain two fields: 'continueuation' and 'actions'.
+The answer must contain two fields: 'text' and 'actions'.
 
-The 'continueuation' field must contain the story.
+The 'text' field must contain the story.
 
 The 'actions' field must contain fields: 'action1' and 'action2'
 'action1' and 'action2' must contain descriptions of action that the main character might take in story right now.
@@ -18,8 +18,8 @@ response:
 JSON
 {
 
-"continuation1": {
-    "continuation": "You woke up on a wooden bench in the tavern, where last night you only wanted to have a mug of ale after work. Your head was splitting, and your mouth was so dry it felt like you’d been drinking sand. A few people were still in the hall: someone was finishing their stew, someone else was playing dice.
+"text1": {
+    "text": "You woke up on a wooden bench in the tavern, where last night you only wanted to have a mug of ale after work. Your head was splitting, and your mouth was so dry it felt like you’d been drinking sand. A few people were still in the hall: someone was finishing their stew, someone else was playing dice.
 At the next table, two men were talking, glancing at you from time to time. When you stirred, one of them smirked and said loudly enough for everyone to hear:
 
 — Well, look who’s awake. Maybe now he’ll explain who’s paying for all this mess.

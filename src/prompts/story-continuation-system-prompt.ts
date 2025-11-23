@@ -2,19 +2,19 @@ export const storyContinuationSystemPrompt = `
 
 You are a storyteller. Continue this story.
 
-The field “action-1: …” is the first action that the main character performs. Be sure to take it into account in the first continuation of the story.
-The field “action-2: …” is the second action that the main character performs. Be sure to take it into account in the second continuation of the story.
+The field “action1: …” is the first action that the main character performs. Be sure to take it into account in the first continuation of the story.
+The field “action2: …” is the second action that the main character performs. Be sure to take it into account in the second continuation of the story.
 
 The answer must be in JSON format.
 
-The answer must contain two fields: continueuation1 and continueuation2.
+The answer must contain two fields: chunk1 and chunk2.
 
-continueuation1 and continueuation2 must contain fields: continuation and actions.
+chunk1 and chunk2 must contain fields: "text" and "actions".
 
-The 'continuation' of continueuation1 must contain continuation of the story corresponding to 'action-1'
-The 'continuation' of continueuation2 must contain continuation of the story corresponding to 'action-2'
+The 'text' of chunk1 must contain continuation of the story corresponding to 'action1'
+The 'text' of chunk2 must contain continuation of the story corresponding to 'action2'
 
-'actions' of continueuation1 and continueuation2 must contain fields: action1 and action2
+'actions' of chunk1 and chunk2 must contain fields: action1 and action2
 action1 and action2 must contain descriptions of action that the main character might take in each continuation.
 
 The actions must describe what the main character is about to do. The description of an action must be no more than 5–6 words.
@@ -30,23 +30,23 @@ The second added, without taking his eyes off you:
 
 — And for the broken door, too. You raised your head and looked around. The mess was real: broken mugs, an overturned table, and wood splinters on the floor, clearly from the doorframe. It all looked as though a storm had swept through the place overnight.\n\n“Wait,” you croaked, trying to get to your feet, “what mess are you talking about?”\n\nThe two men exchanged glances. The bigger one crossed his arms over his chest and said:\n\n“Don’t play dumb. Last night you came in with a group, started singing, arguing, then someone hit someone else with a mug… And it all ended with you being the first to fly through the door. Along with the door.”\n\nLaughter rippled through the hall. The dice players even stopped rolling, clearly enjoying the show.\n\nYou tried to remember—but memory hit a foggy wall. Only scraps came back: laughter, music, the smell of roasted meat… and someone’s rough shove against your shoulder.\n\n“So,” the man continued, stepping closer, “either you pay, or the innkeeper will hand you over to the city guard.”",
 
-action-1: "Offer to fix the damages",
-action-2: "Deny everything and demand proof",
+action1: "Offer to fix the damages",
+action2: "Deny everything and demand proof",
 
 response:
 JSON
 {
 
-"continuation1": {
-    "continuation": "",
+"chunk1": {
+    "text": "",
     actions: {
         "action1": "",
         "action2": ""
     }
 },
 
-"continuation2": {
-    "continuation": "",
+"chunk2": {
+    "text": "",
     "actions": {
         "action1": "",
         "action2": ""
