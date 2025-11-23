@@ -58,6 +58,7 @@ export const initStoryAction = reatomAsync(async (ctx) => {
                 ctx.get(storyTagsAtoms.narrativeStyle),
                 ctx.get(storyTagsAtoms.tone),
             ),
+            ctx,
         )
     )
         .replace(/```json|```/g, '')
@@ -94,6 +95,7 @@ export const generateStoryChunksAction = reatomAsync(async (ctx): Promise<StoryC
                 ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
                 ctx.get(dictionaryCardsAtom),
             ),
+            ctx,
         )
     )
         .replace(/```json|```/g, '')
@@ -128,6 +130,7 @@ export const generateStoryActionsAction = reatomAsync(async (ctx): Promise<Chunk
                     ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
                     ctx.get(dictionaryCardsAtom),
                 ),
+                ctx,
             )
         )
             .replace(/```json|```/g, '')

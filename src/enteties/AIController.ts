@@ -1,15 +1,14 @@
 import { GoogleGenAI } from '@google/genai';
+import { Ctx } from '@reatom/core';
 import axios from 'axios';
-import { reatomCtx, storySettingsAtoms } from '../model/atoms';
+import { storySettingsAtoms } from '../model/atoms';
 
 interface AIInterface {
-    generateAIText: (prompt: string) => Promise<string>;
+    generateAIText: (prompt: string, ctx: Ctx) => Promise<string>;
 }
 
-const ctx = reatomCtx;
-
 class OpenRouterAIController implements AIInterface {
-    async generateAIText(prompt: string) {
+    async generateAIText(prompt: string, ctx: Ctx) {
         const AIModel = ctx.get(storySettingsAtoms.AIModelAtom);
         const apiKey = ctx.get(storySettingsAtoms.openRouterTokenAtom);
 
@@ -43,10 +42,10 @@ class OpenRouterAIController implements AIInterface {
 
 class GemeniAIController implements AIInterface {
     private ai = new GoogleGenAI({
-        apiKey: 'AIzaSyCzl8i9dRBBXPYh5S1DqWSMFAV51ZqVxsM',
+        apiKey: 'AIzaSyCMZk5uNIwJoXOoXlgUZXDTVbo6KSPfWoI',
     });
 
-    async generateAIText(prompt: string) {
+    async generateAIText(prompt: string, ctx: Ctx) {
         //параметры запроса, если нет json файла
         const defaulParameters = {
             model: 'gemini-2.5-flash',
