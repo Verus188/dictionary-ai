@@ -1,5 +1,5 @@
 import { reatomAsync } from '@reatom/async';
-import { action, AtomMut } from '@reatom/core';
+import { AtomMut } from '@reatom/core';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { AIController } from '../enteties/AIController';
 import sqliteBD from '../enteties/sqliteDB';
@@ -20,17 +20,21 @@ import {
 } from './atoms';
 import { ChunkActions, StoryChunk, StoryChunkVariants } from './types';
 
-export const addDictionaryCardAction = action(async (ctx, db: SQLiteDatabase, card: string) => {
-    await sqliteBD.saveCard(db, card);
-    dictionaryCardsAtom(ctx, await sqliteBD.getAllCards(db));
-});
+export const addDictionaryCardAction = reatomAsync(
+    async (ctx, db: SQLiteDatabase, card: string) => {
+        await sqliteBD.saveCard(db, card);
+        dictionaryCardsAtom(ctx, await sqliteBD.getAllCards(db));
+    },
+);
 
-export const deleteDictionaryCardAction = action(async (ctx, db: SQLiteDatabase, id: string) => {
-    await sqliteBD.deleteCard(db, id);
-    dictionaryCardsAtom(ctx, await sqliteBD.getAllCards(db));
-});
+export const deleteDictionaryCardAction = reatomAsync(
+    async (ctx, db: SQLiteDatabase, id: string) => {
+        await sqliteBD.deleteCard(db, id);
+        dictionaryCardsAtom(ctx, await sqliteBD.getAllCards(db));
+    },
+);
 
-export const setSettingAction = action(
+export const setSettingAction = reatomAsync(
     async (
         ctx,
         db: SQLiteDatabase,
