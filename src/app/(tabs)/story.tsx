@@ -8,7 +8,6 @@ import { ScrollView, Text, View } from 'react-native';
 const StoryScreen = reatomComponent(({ ctx }) => {
     // хранит текущий отрывок истории и варианты действий
     const displayerChunk = ctx.spy(storyChunkAtom);
-    console.log(displayerChunk);
 
     // загрузка истории
     const isStoryLoading = ctx.spy(nextStoryChunksResource.pendingAtom);
@@ -16,7 +15,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
     // варинанты развития истории
     const continuationsInfo = ctx.spy(nextStoryChunksResource.dataAtom);
 
-    const handlePressButton = async (continuation?: StoryChunk) => {
+    const handleChooseAction = async (continuation?: StoryChunk) => {
         if (continuation) {
             storyChunkAtom(ctx, continuation);
         }
@@ -41,7 +40,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
                 <View className="flex flex-1 w-full flex-row gap-4 justify-between">
                     <Button
                         onPress={() => {
-                            handlePressButton(continuationsInfo?.chunk1);
+                            handleChooseAction(continuationsInfo?.chunk1);
                         }}
                         className={`flex-1 h-full ${
                             isStoryLoading ? 'opacity-50 pointer-events-none' : ''
@@ -53,7 +52,7 @@ const StoryScreen = reatomComponent(({ ctx }) => {
                     </Button>
                     <Button
                         onPress={() => {
-                            handlePressButton(continuationsInfo?.chunk2);
+                            handleChooseAction(continuationsInfo?.chunk2);
                         }}
                         className={`flex-1 h-full ${
                             isStoryLoading ? 'opacity-50 pointer-events-none' : ''

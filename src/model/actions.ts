@@ -12,6 +12,7 @@ import { storyInitializationSystemPrompt } from '../prompts/story-initialization
 import {
     dictionaryCardsAtom,
     isInitStoryLoadingAtom,
+    nextStoryChunksResource,
     storyAtom,
     storyChunkAtom,
     storySettingsAtoms,
@@ -71,6 +72,7 @@ export const initStoryAction = reatomAsync(async (ctx) => {
             const chunk = JSON.parse(response) as StoryChunk;
             storyAtom(ctx, chunk.text);
             storyChunkAtom(ctx, chunk);
+            nextStoryChunksResource(ctx);
             return chunk;
         } catch (error) {
             console.error(error);
