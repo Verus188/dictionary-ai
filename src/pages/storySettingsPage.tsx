@@ -1,6 +1,6 @@
 import { setAIController } from '@/src/enteties/AIController';
 import { initStoryAction, setSettingAction } from '@/src/model/actions';
-import { nextStoryChunksResource, storySettingsAtoms, storyTagsAtoms } from '@/src/model/atoms';
+import { isInitStoryLoadingAtom, storySettingsAtoms, storyTagsAtoms } from '@/src/model/atoms';
 import { StoryTagsType } from '@/src/model/types';
 import { Picker } from '@react-native-picker/picker';
 import { reatomComponent } from '@reatom/npm-react';
@@ -23,6 +23,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
     } = storySettingsAtoms;
     const token = ctx.spy(storySettingsAtoms.openRouterTokenAtom);
     const AIModel = ctx.spy(storySettingsAtoms.AIModelAtom);
+    const isInitLoading = ctx.spy(isInitStoryLoadingAtom);
     const storyTags: StoryTagsType = storyTagsJson as StoryTagsType;
 
     return (
@@ -432,10 +433,9 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 onPress={async () => {
                                     const story = await initStoryAction(ctx);
                                 }}
+                                disabled={isInitLoading}
                                 className={`py-2 ${
-                                    ctx.spy(nextStoryChunksResource.pendingAtom)
-                                        ? 'opacity-50 pointer-events-none'
-                                        : ''
+                                    isInitLoading ? 'opacity-50 pointer-events-none' : ''
                                 }`}
                             >
                                 <Text className="text-text-color text-lg">

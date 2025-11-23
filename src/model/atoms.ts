@@ -15,12 +15,7 @@ export const storyAtom = atom<string | null>(null, 'storyAtom');
 /** Хрнаит отображаемы кусок истории */
 export const storyChunkAtom = atom<StoryChunk | null>(null, 'storyChunkAtom');
 
-// export const nextStoryChunksVariantsAtom = atom<StoryChunkVariants | null>(
-//     null,
-//     'nextStoryChunksVariantsAtom',
-// );
-
-/** Ресурс генерации следующих кусков истории */
+/** Ресурс генерации следующих кусков истории (2 куска) */
 export const nextStoryChunksResource = reatomResource(async (ctx) => {
     const story = ctx.spy(storyAtom);
     if (!story) return null;
@@ -29,6 +24,9 @@ export const nextStoryChunksResource = reatomResource(async (ctx) => {
         return generateStoryChunksAction(ctx);
     });
 }, 'nextStoryChunksResource').pipe(withDataAtom(null), withStatusesAtom());
+
+// Флаг загрузки при инициализации истории
+export const isInitStoryLoadingAtom = atom<boolean>(false, 'isInitStoryLoadingAtom');
 
 // Атомы настроек
 export const storySettingsAtoms = {

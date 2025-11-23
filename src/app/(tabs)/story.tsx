@@ -8,6 +8,7 @@ import { ScrollView, Text, View } from 'react-native';
 const StoryScreen = reatomComponent(({ ctx }) => {
     // хранит текущий отрывок истории и варианты действий
     const displayerChunk = ctx.spy(storyChunkAtom);
+    console.log(displayerChunk);
 
     // загрузка истории
     const isStoryLoading = ctx.spy(nextStoryChunksResource.pendingAtom);

@@ -11,6 +11,7 @@ import { storyContinuationSystemPrompt } from '../prompts/story-continuation-sys
 import { storyInitializationSystemPrompt } from '../prompts/story-initialization-system-prompt';
 import {
     dictionaryCardsAtom,
+    isInitStoryLoadingAtom,
     storyAtom,
     storyChunkAtom,
     storySettingsAtoms,
@@ -42,35 +43,41 @@ export const setSettingAction = action(
 );
 
 export const initStoryAction = reatomAsync(async (ctx) => {
-    const response = (
-        await AIController.generateAIText(
-            getStoryInitializationPrompt(
-                storyInitializationSystemPrompt,
-                ctx.get(storySettingsAtoms.chunkLengthAtom),
-                ctx.get(storySettingsAtoms.educationLanguageAtom),
-                ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
-                ctx.get(dictionaryCardsAtom),
-                ctx.get(storySettingsAtoms.storyPromptAtom),
-                ctx.get(storyTagsAtoms.character),
-                ctx.get(storyTagsAtoms.genres),
-                ctx.get(storyTagsAtoms.setting),
-                ctx.get(storyTagsAtoms.plotMotif),
-                ctx.get(storyTagsAtoms.narrativeStyle),
-                ctx.get(storyTagsAtoms.tone),
-            ),
-            ctx,
-        )
-    )
-        .replace(/```json|```/g, '')
-        .trim();
-
+    isInitStoryLoadingAtom(ctx, true);
     try {
-        const chunk = JSON.parse(response) as StoryChunk;
-        storyAtom(ctx, chunk.text);
-        storyChunkAtom(ctx, chunk);
-    } catch (error) {
-        console.error(error);
-        throw new Error('Error generating story');
+        const response = (
+            await AIController.generateAIText(
+                getStoryInitializationPrompt(
+                    storyInitializationSystemPrompt,
+                    ctx.get(storySettingsAtoms.chunkLengthAtom),
+                    ctx.get(storySettingsAtoms.educationLanguageAtom),
+                    ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
+                    ctx.get(dictionaryCardsAtom),
+                    ctx.get(storySettingsAtoms.storyPromptAtom),
+                    ctx.get(storyTagsAtoms.character),
+                    ctx.get(storyTagsAtoms.genres),
+                    ctx.get(storyTagsAtoms.setting),
+                    ctx.get(storyTagsAtoms.plotMotif),
+                    ctx.get(storyTagsAtoms.narrativeStyle),
+                    ctx.get(storyTagsAtoms.tone),
+                ),
+                ctx,
+            )
+        )
+            .replace(/```json|```/g, '')
+            .trim();
+
+        try {
+            const chunk = JSON.parse(response) as StoryChunk;
+            storyAtom(ctx, chunk.text);
+            storyChunkAtom(ctx, chunk);
+            return chunk;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error generating story');
+        }
+    } finally {
+        isInitStoryLoadingAtom(ctx, false);
     }
 }, 'initStory');
 
