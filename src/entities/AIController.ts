@@ -40,7 +40,7 @@ class OpenRouterAIController implements AIInterface {
     }
 }
 
-class GemeniAIController implements AIInterface {
+class GeminiAIController implements AIInterface {
     private ai = new GoogleGenAI({
         apiKey: 'AIzaSyCMZk5uNIwJoXOoXlgUZXDTVbo6KSPfWoI',
     });
@@ -64,10 +64,13 @@ class GemeniAIController implements AIInterface {
     }
 }
 
-export let AIController: AIInterface = new GemeniAIController();
+export let AIController: AIInterface = new GeminiAIController();
 
 export const setAIController = (model: string | null) => {
-    AIController = model === 'gemeni' ? new GemeniAIController() : new OpenRouterAIController();
+    AIController =
+        model === 'gemini' || model === 'gemeni'
+            ? new GeminiAIController()
+            : new OpenRouterAIController();
 
     return AIController;
 };

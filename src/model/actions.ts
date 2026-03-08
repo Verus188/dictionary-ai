@@ -1,8 +1,8 @@
 import { reatomAsync } from '@reatom/async';
 import { AtomMut } from '@reatom/core';
 import { SQLiteDatabase } from 'expo-sqlite';
-import { AIController } from '../enteties/AIController';
-import sqliteBD from '../enteties/sqliteDB';
+import { AIController } from '../entities/AIController';
+import sqliteBD from '../entities/sqliteDB';
 import { getStoryActionsPrompt } from '../prompts/get-story-actions-prompt';
 import { getStoryContinuationPrompt } from '../prompts/get-story-continuation-prompt';
 import { getStoryInitializationPrompt } from '../prompts/get-story-initialization-prompt';

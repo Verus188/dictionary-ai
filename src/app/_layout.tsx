@@ -1,8 +1,8 @@
 import { reatomContext } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
-import { setAIController } from '../enteties/AIController';
-import sqliteBD from '../enteties/sqliteDB';
+import { setAIController } from '../entities/AIController';
+import sqliteBD from '../entities/sqliteDB';
 import { reatomCtx, storySettingsAtoms } from '../model/atoms';
 
 // DELETE FROM dictionaryCards;
@@ -23,7 +23,7 @@ export default function RootLayout() {
             value TEXT
           );
           INSERT INTO settings (setting, value) VALUES 
-          ('AIModel', 'gemeni'),
+          ('AIModel', 'gemini'),
           ('openRouterToken', NULL),
           ('storyContinuationLength', '800'),
           ('educationLanguage', 'English'),
@@ -43,9 +43,16 @@ export default function RootLayout() {
                     chunkLengthAtom: chunkLength,
                 } = storySettingsAtoms;
 
-                const savedAIModel = settings.AIModel ?? ctx.get(AIModel);
+                const savedAIModel =
+                    (settings.AIModel ?? ctx.get(AIModel)) === 'gemeni'
+                        ? 'gemini'
+                        : (settings.AIModel ?? ctx.get(AIModel));
                 AIModel(ctx, savedAIModel);
                 setAIController(savedAIModel);
+
+                if (settings.AIModel === 'gemeni') {
+                    await sqliteBD.setSetting(db, 'AIModel', 'gemini');
+                }
 
                 if (settings.openRouterToken !== undefined) {
                     openRouterToken(ctx, settings.openRouterToken ?? '');

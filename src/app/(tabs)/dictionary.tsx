@@ -1,4 +1,4 @@
-import { DictionaryCardsList } from "@/src/components/ dictionary-cards-list";
+import { DictionaryCardsList } from "@/src/components/dictionary-cards-list";
 import { InputModal } from "@/src/components/input-modal";
 import { getColor } from "@/src/helpers/tw-colors";
 import { addDictionaryCardAction } from "@/src/model/actions";

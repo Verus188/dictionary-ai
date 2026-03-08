@@ -3,7 +3,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { FC, useEffect } from 'react';
 import { Alert, Platform, View, ViewProps } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-import sqliteBD from '../enteties/sqliteDB';
+import sqliteBD from '../entities/sqliteDB';
 import { deleteDictionaryCardAction } from '../model/actions';
 import { dictionaryCardsAtom } from '../model/atoms';
 import { DictionaryCard } from './dictionary-card';

@@ -1,4 +1,4 @@
-import { setAIController } from '@/src/enteties/AIController';
+import { setAIController } from '@/src/entities/AIController';
 import { getColor } from '@/src/helpers/tw-colors';
 import { initStoryAction, setSettingAction } from '@/src/model/actions';
 import { isInitStoryLoadingAtom, storySettingsAtoms, storyTagsAtoms } from '@/src/model/atoms';
@@ -63,7 +63,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     >
                                         <Picker.Item
                                             label="Google: Gemini-2.5-flash (free)"
-                                            value="gemeni"
+                                            value="gemini"
                                         />
                                         <Picker.Item
                                             label="DeepSeek: DeepSeek V3.1 (free)"
@@ -90,7 +90,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                             </View>
 
                             {/* Токен */}
-                            {AIModel !== 'gemeni' && (
+                            {AIModel !== 'gemini' && (
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">
                                         OpenRouter token
