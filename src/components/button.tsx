@@ -9,7 +9,7 @@ type ButtonProps = ComponentPropsWithoutRef<typeof Pressable> & {
 export const Button: FC<ButtonProps> = ({ className, ...props }) => (
     <Pressable
         className={twMerge(
-            `flex justify-center items-center border border-blue-200 rounded-md bg-blue-400 px-4 py-0 w-fit text-white`,
+            'flex justify-center items-center border border-accent-border-color rounded-md bg-accent-color px-4 py-0 w-fit',
             className,
         )}
         {...props}

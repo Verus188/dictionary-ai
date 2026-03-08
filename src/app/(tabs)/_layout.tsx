@@ -43,7 +43,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
                                 isCardModalVisibleAtom(ctx, true);
                             }}
                         >
-                            <Text className="text-blue-500 capitalize">add</Text>
+                            <Text className="text-accent-color-strong capitalize">add</Text>
                         </Pressable>
                     ),
                     tabBarIcon: ({ color, focused }) => (
@@ -71,7 +71,9 @@ const TabLayout = reatomComponent(({ ctx }) => {
                                         storyAtom(ctx, null);
                                     }}
                                 >
-                                    <Text className="text-blue-500 capitalize">reset</Text>
+                                    <Text className="text-accent-color-strong capitalize">
+                                        reset
+                                    </Text>
                                 </Pressable>
                                 {isStoryLoading && (
                                     <View className="flex justify-center items-center px-4">

@@ -1,5 +1,6 @@
 import { DictionaryCardsList } from "@/src/components/ dictionary-cards-list";
 import { InputModal } from "@/src/components/input-modal";
+import { getColor } from "@/src/helpers/tw-colors";
 import { addDictionaryCardAction } from "@/src/model/actions";
 import { dictionaryCardsAtom, isCardModalVisibleAtom } from "@/src/model/atoms";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -24,8 +25,8 @@ const DictionaryScreen = reatomComponent(({ ctx }) => {
 
         {ctx.spy(dictionaryCardsAtom).length === 0 && (
           <View className="flex-1 gap-4 items-center justify-center bg-main-bg">
-            <Ionicons name="search-outline" size={100} color={"#60A5FA"} />
-            <Text className="text-xl font-semibold text-blue-400">Empty</Text>
+            <Ionicons name="search-outline" size={100} color={getColor("accent-color")} />
+            <Text className="text-xl font-semibold text-accent-color">Empty</Text>
           </View>
         )}
       </ScrollView>

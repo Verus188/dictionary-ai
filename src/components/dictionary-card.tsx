@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { getColor } from '@/src/helpers/tw-colors';
 import { FC } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -17,7 +18,7 @@ export const DictionaryCard: FC<DictionaryCardProps> = ({ card, id, onDelete }) 
                     onDelete?.(id);
                 }}
             >
-                <Ionicons name="close-outline" size={24} color="white" />
+                <Ionicons name="close-outline" size={24} color={getColor('text-color')} />
             </Pressable>
         </View>
     );

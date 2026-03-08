@@ -1,4 +1,5 @@
 import { setAIController } from '@/src/enteties/AIController';
+import { getColor } from '@/src/helpers/tw-colors';
 import { initStoryAction, setSettingAction } from '@/src/model/actions';
 import { isInitStoryLoadingAtom, storySettingsAtoms, storyTagsAtoms } from '@/src/model/atoms';
 import { StoryTagsType } from '@/src/model/types';
@@ -25,6 +26,11 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
     const AIModel = ctx.spy(storySettingsAtoms.AIModelAtom);
     const isInitLoading = ctx.spy(isInitStoryLoadingAtom);
     const storyTags: StoryTagsType = storyTagsJson as StoryTagsType;
+    const pickerStyle = {
+        height: 'auto' as const,
+        color: getColor('text-color'),
+        backgroundColor: getColor('transparent'),
+    };
 
     return (
         <View className="flex-1 bg-main-bg items-center">
@@ -38,7 +44,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                             {/* Выбор модели */}
                             <View className="flex gap-2">
                                 <Text className="text-lg text-text-color">OpenRouter AI model</Text>
-                                <View className="rounded border border-white px-2">
+                                <View className="rounded border border-text-color px-2">
                                     <Picker<string>
                                         onValueChange={(value) => {
                                             setSettingAction(
@@ -51,13 +57,8 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             setAIController(value);
                                         }}
                                         className="py-1"
-                                        style={{
-                                            height: 'auto',
-                                            color: 'white',
-                                            backgroundColor: 'transparent',
-                                            paddingVertical: 4,
-                                        }}
-                                        dropdownIconColor="white"
+                                        style={{ ...pickerStyle, paddingVertical: 4 }}
+                                        dropdownIconColor={getColor('text-color')}
                                         mode="dropdown"
                                     >
                                         <Picker.Item
@@ -95,7 +96,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                         OpenRouter token
                                     </Text>
                                     <TextInput
-                                        className={`border border-text-color rounded text-blue-400 py-1 px-1`}
+                                        className={`border border-text-color rounded text-accent-color py-1 px-1`}
                                         onChange={(e) => {
                                             setSettingAction(
                                                 ctx,
@@ -115,7 +116,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <Text className="text-lg text-text-color">
                                     Насколько длинные кусочки истории
                                 </Text>
-                                <View className="rounded border border-white px-2">
+                                <View className="rounded border border-text-color px-2">
                                     <Picker<string>
                                         selectedValue={ctx.spy(chunkLengthAtom)}
                                         onValueChange={(value) => {
@@ -128,12 +129,8 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             );
                                         }}
                                         className="py-1"
-                                        style={{
-                                            height: 'auto',
-                                            color: 'white',
-                                            backgroundColor: 'transparent',
-                                        }}
-                                        dropdownIconColor="white"
+                                        style={pickerStyle}
+                                        dropdownIconColor={getColor('text-color')}
                                         mode="dropdown"
                                     >
                                         <Picker.Item label="Короткие" value="400" />
@@ -147,7 +144,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                             {/* Выбор языка повествования */}
                             <View className="flex gap-2">
                                 <Text className="text-lg text-text-color">Язык повествования</Text>
-                                <View className="rounded border border-white px-2">
+                                <View className="rounded border border-text-color px-2">
                                     <Picker<string>
                                         selectedValue={ctx.spy(educationLanguageAtom)}
                                         onValueChange={(value) => {
@@ -160,12 +157,8 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             );
                                         }}
                                         className="py-1"
-                                        style={{
-                                            height: 'auto',
-                                            color: 'white',
-                                            backgroundColor: 'transparent',
-                                        }}
-                                        dropdownIconColor="white"
+                                        style={pickerStyle}
+                                        dropdownIconColor={getColor('text-color')}
                                         mode="dropdown"
                                     >
                                         <Picker.Item label="English" value="English" />
@@ -191,7 +184,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <Text className="text-lg text-text-color">
                                     Сложность языка истории
                                 </Text>
-                                <View className="rounded border border-white px-2">
+                                <View className="rounded border border-text-color px-2">
                                     <Picker<string>
                                         selectedValue={ctx.spy(storyLanguageDifficultyAtom)}
                                         onValueChange={(value) => {
@@ -204,12 +197,8 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             );
                                         }}
                                         className="py-1"
-                                        style={{
-                                            height: 'auto',
-                                            color: 'white',
-                                            backgroundColor: 'transparent',
-                                        }}
-                                        dropdownIconColor="white"
+                                        style={pickerStyle}
+                                        dropdownIconColor={getColor('text-color')}
                                         mode="dropdown"
                                     >
                                         <Picker.Item label="Очень простая" value="1" />
@@ -237,7 +226,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     <TextInput
                                         multiline
                                         value={ctx.spy(storyPromptAtom) || ''}
-                                        className="h-40 text-orange-400 border border-text-color rounded py-1 px-1"
+                                        className="h-40 text-warning-color border border-text-color rounded py-1 px-1"
                                         onChange={(e) => {
                                             storyPromptAtom(ctx, e.nativeEvent.text);
                                         }}
@@ -247,19 +236,15 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 {/* Главный герой */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Главный герой</Text>
-                                    <View className="rounded border border-white px-2">
+                                    <View className="rounded border border-text-color px-2">
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.character)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.setting(ctx, value);
                                             }}
                                             className="py-1"
-                                            style={{
-                                                height: 'auto',
-                                                color: 'white',
-                                                backgroundColor: 'transparent',
-                                            }}
-                                            dropdownIconColor="white"
+                                            style={pickerStyle}
+                                            dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
                                             <Picker.Item key={'none'} label={'none'} value={''} />
@@ -314,19 +299,15 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 {/* Сеттинги */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Сеттинг</Text>
-                                    <View className="rounded border border-white px-2">
+                                    <View className="rounded border border-text-color px-2">
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.setting)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.setting(ctx, value);
                                             }}
                                             className="py-1"
-                                            style={{
-                                                height: 'auto',
-                                                color: 'white',
-                                                backgroundColor: 'transparent',
-                                            }}
-                                            dropdownIconColor="white"
+                                            style={pickerStyle}
+                                            dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
                                             <Picker.Item key={'none'} label={'none'} value={''} />
@@ -344,19 +325,15 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 {/* Мотивы сюжета */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Мотив</Text>
-                                    <View className="rounded border border-white px-2">
+                                    <View className="rounded border border-text-color px-2">
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.plotMotif)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.plotMotif(ctx, value);
                                             }}
                                             className="py-1"
-                                            style={{
-                                                height: 'auto',
-                                                color: 'white',
-                                                backgroundColor: 'transparent',
-                                            }}
-                                            dropdownIconColor="white"
+                                            style={pickerStyle}
+                                            dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
                                             <Picker.Item key={'none'} label={'none'} value={''} />
@@ -376,19 +353,15 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     <Text className="text-lg text-text-color">
                                         Нарративный стиль
                                     </Text>
-                                    <View className="rounded border border-white px-2">
+                                    <View className="rounded border border-text-color px-2">
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.narrativeStyle)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.narrativeStyle(ctx, value);
                                             }}
                                             className="py-1"
-                                            style={{
-                                                height: 'auto',
-                                                color: 'white',
-                                                backgroundColor: 'transparent',
-                                            }}
-                                            dropdownIconColor="white"
+                                            style={pickerStyle}
+                                            dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
                                             <Picker.Item key={'none'} label={'none'} value={''} />
@@ -406,19 +379,15 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 {/* Тон истории */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Тон</Text>
-                                    <View className="rounded border border-white px-2">
+                                    <View className="rounded border border-text-color px-2">
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.tone)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.tone(ctx, value);
                                             }}
                                             className="py-1"
-                                            style={{
-                                                height: 'auto',
-                                                color: 'white',
-                                                backgroundColor: 'transparent',
-                                            }}
-                                            dropdownIconColor="white"
+                                            style={pickerStyle}
+                                            dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
                                             <Picker.Item key={'none'} label={'none'} value={''} />

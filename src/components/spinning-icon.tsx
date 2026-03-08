@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { getColor } from '@/src/helpers/tw-colors';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
 
@@ -36,7 +37,7 @@ export const SpinningIcon = () => {
 
     return (
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
-            <Ionicons name="refresh-outline" size={24} color="white" />
+            <Ionicons name="refresh-outline" size={24} color={getColor('text-color')} />
         </Animated.View>
     );
 };

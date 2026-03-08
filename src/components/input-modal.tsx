@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { getColor } from '@/src/helpers/tw-colors';
 import { FC, useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 
@@ -28,12 +29,16 @@ export const InputModal: FC<CardModalProps> = ({
 
     return (
         <Modal animationType="fade" transparent={true} visible={isVisible}>
-            <View className="flex-1 items-center justify-center bg-black/30">
+            <View className="flex-1 items-center justify-center bg-overlay-color">
                 <View className="w-[80%] max-w-[600px] bg-tabs-bg border border-tabs-border-color flex flex-col gap-10 p-4 rounded-lg">
                     <View className="flex flex-row justify-between items-center">
                         <Text className="text-text-color text-lg">{header}</Text>
                         <Pressable onPress={handleClose}>
-                            <Ionicons name="close-outline" size={24} color="white" />
+                            <Ionicons
+                                name="close-outline"
+                                size={24}
+                                color={getColor('text-color')}
+                            />
                         </Pressable>
                     </View>
                     <View>
@@ -45,19 +50,19 @@ export const InputModal: FC<CardModalProps> = ({
                     </View>
                     <View className="flex flex-row justify-end gap-2">
                         <Pressable
-                            className="flex justify-center items-center rounded-md bg-gray-600 border border-gray-400 px-2 py-1"
+                            className="flex justify-center items-center rounded-md bg-neutral-button-bg border border-neutral-button-border px-2 py-1"
                             onPress={handleClose}
                         >
-                            <Text className="text-white text-lg">{closeButtonText}</Text>
+                            <Text className="text-text-color text-lg">{closeButtonText}</Text>
                         </Pressable>
                         <Pressable
-                            className="flex justify-center items-center rounded-md bg-blue-400 border border-blue-200 px-2 py-1"
+                            className="flex justify-center items-center rounded-md bg-accent-color border border-accent-border-color px-2 py-1"
                             onPress={() => {
                                 onSubmit?.(inputValue);
                                 handleClose();
                             }}
                         >
-                            <Text className="text-white text-lg">{submitButtonText}</Text>
+                            <Text className="text-text-color text-lg">{submitButtonText}</Text>
                         </Pressable>
                     </View>
                 </View>
