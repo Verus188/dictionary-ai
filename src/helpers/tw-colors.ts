@@ -1,8 +1,7 @@
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '../../tailwind.config.js';
+import { colors } from '@/src/theme/colors';
+import type { AppColorName } from '@/src/theme/colors';
 
-const full = resolveConfig(tailwindConfig as any);
+export const twColors: Record<AppColorName, string> = { ...colors };
 
-export const twColors: Record<string, string> = (full?.theme as any)?.colors ?? {};
-
-export const getColor = (name: string, fallback?: string) => twColors[name] ?? fallback ?? name;
+export const getColor = (name: string, fallback?: string) =>
+    twColors[name as AppColorName] ?? fallback ?? name;

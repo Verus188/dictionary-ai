@@ -1,4 +1,5 @@
 import nativewind from "nativewind/preset";
+import { colors } from "./src/theme/colors";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -6,14 +7,7 @@ module.exports = {
   presets: [nativewind],
   theme: {
     extend: {
-      colors: {
-        "main-bg": "#181a1b",
-        "tabs-bg": "#242526",
-        "tabs-border-color": "#3a3a3a",
-        "text-color": "white",
-        "card-bg": "#1D1E21",
-        "card-border-color": "#202024",
-      },
+      colors,
     },
   },
   plugins: [],
