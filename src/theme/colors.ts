@@ -14,6 +14,10 @@ export const colors = {
     'not-found-text-color': '#D8B4FE',
     'not-found-border-color': '#C084FC',
     'not-found-bg-color': '#9333EA',
+    'toast-error-border-color': '#EF4444',
+    'toast-error-bg-color': '#111827',
+    'toast-error-title-color': '#F3F4F6',
+    'toast-error-message-color': '#E5E7EB',
     'overlay-color': 'rgba(0, 0, 0, 0.3)',
     transparent: 'transparent',
 } as const;

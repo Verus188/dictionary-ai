@@ -6,6 +6,7 @@ import sqliteBD from '../entities/sqliteDB';
 import { getStoryActionsPrompt } from '../prompts/get-story-actions-prompt';
 import { getStoryContinuationPrompt } from '../prompts/get-story-continuation-prompt';
 import { getStoryInitializationPrompt } from '../prompts/get-story-initialization-prompt';
+import { showErrorToast } from '../components/app-toast';
 import { storyActionsSystemPrompt } from '../prompts/story-actions-system-prompt';
 import { storyContinuationSystemPrompt } from '../prompts/story-continuation-system-prompt';
 import { storyInitializationSystemPrompt } from '../prompts/story-initialization-system-prompt';
@@ -72,16 +73,15 @@ export const initStoryAction = reatomAsync(async (ctx) => {
             .replace(/```json|```/g, '')
             .trim();
 
-        try {
-            const chunk = JSON.parse(response) as StoryChunk;
-            storyAtom(ctx, chunk.text);
-            storyChunkAtom(ctx, chunk);
-            nextStoryChunksResource(ctx);
-            return chunk;
-        } catch (error) {
-            console.error(error);
-            throw new Error('Error generating story');
-        }
+        const chunk = JSON.parse(response) as StoryChunk;
+        storyAtom(ctx, chunk.text);
+        storyChunkAtom(ctx, chunk);
+        nextStoryChunksResource(ctx);
+        return chunk;
+    } catch (error) {
+        console.error(error);
+        showErrorToast('Не удалось сгенерировать историю');
+        throw new Error('Error generating story');
     } finally {
         isInitStoryLoadingAtom(ctx, false);
     }
@@ -91,33 +91,34 @@ export const initStoryAction = reatomAsync(async (ctx) => {
  * Генерирует продложение истории на основе контекста
  */
 export const generateStoryChunksAction = reatomAsync(async (ctx): Promise<StoryChunkVariants> => {
-    const chunk = ctx.get(storyChunkAtom);
-
-    if (!chunk) {
-        throw new Error('No story found');
-    }
-
-    const response = (
-        await AIController.generateAIText(
-            getStoryContinuationPrompt(
-                ctx.get(storyAtom) || '',
-                storyContinuationSystemPrompt,
-                chunk.actions,
-                ctx.get(storySettingsAtoms.chunkLengthAtom),
-                ctx.get(storySettingsAtoms.educationLanguageAtom),
-                ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
-                ctx.get(dictionaryCardsAtom),
-            ),
-            ctx,
-        )
-    )
-        .replace(/```json|```/g, '')
-        .trim();
-
     try {
+        const chunk = ctx.get(storyChunkAtom);
+
+        if (!chunk) {
+            throw new Error('No story found');
+        }
+
+        const response = (
+            await AIController.generateAIText(
+                getStoryContinuationPrompt(
+                    ctx.get(storyAtom) || '',
+                    storyContinuationSystemPrompt,
+                    chunk.actions,
+                    ctx.get(storySettingsAtoms.chunkLengthAtom),
+                    ctx.get(storySettingsAtoms.educationLanguageAtom),
+                    ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
+                    ctx.get(dictionaryCardsAtom),
+                ),
+                ctx,
+            )
+        )
+            .replace(/```json|```/g, '')
+            .trim();
+
         return JSON.parse(response) as StoryChunkVariants;
     } catch (error) {
         console.error(error);
+        showErrorToast('Не удалось сгенерировать продолжение истории');
         throw new Error('Error generating story');
     }
 });
@@ -153,6 +154,7 @@ export const generateStoryActionsAction = reatomAsync(async (ctx): Promise<Chunk
         return JSON.parse(response) as ChunkActions;
     } catch (error) {
         console.error(error);
+        showErrorToast('Не удалось сгенерировать варианты действий');
         throw new Error('Error generating actions');
     }
 });

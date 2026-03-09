@@ -1,6 +1,7 @@
 import { reatomContext } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
+import { AppToast } from '../components/app-toast';
 import { setAIController } from '../entities/AIController';
 import sqliteBD from '../entities/sqliteDB';
 import { reatomCtx, storySettingsAtoms } from '../model/atoms';
@@ -81,6 +82,7 @@ export default function RootLayout() {
                 <Stack>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 </Stack>
+                <AppToast />
             </reatomContext.Provider>
         </SQLiteProvider>
     );

@@ -329,7 +329,11 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                             </View>
                             <Button
                                 onPress={async () => {
-                                    const story = await initStoryAction(ctx);
+                                    try {
+                                        await initStoryAction(ctx);
+                                    } catch (error) {
+                                        void error;
+                                    }
                                 }}
                                 disabled={isInitLoading}
                                 className={`py-2 ${
