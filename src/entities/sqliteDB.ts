@@ -7,7 +7,20 @@ class SQLiteBD {
     };
 
     saveCard = async (db: SQLiteDatabase, card: string): Promise<void> => {
-        await db.runAsync('INSERT INTO dictionaryCards (card) VALUES (?)', [card]);
+        const normalizedCard = card.trim().toLowerCase();
+
+        await db.runAsync(
+            `
+                INSERT INTO dictionaryCards (card)
+                SELECT ?
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM dictionaryCards
+                    WHERE TRIM(card) = ?
+                )
+            `,
+            [normalizedCard, normalizedCard],
+        );
     };
 
     deleteCard = async (db: SQLiteDatabase, id: string): Promise<void> => {
