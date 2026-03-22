@@ -162,7 +162,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Главный герой</Text>
                                     <View className="rounded border border-text-color px-2">
-                                        <Picker<string>
+                                        <Picker<string | null>
                                             selectedValue={ctx.spy(storyTagsAtoms.character)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.character(ctx, value);
@@ -172,7 +172,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={''} />
+                                            <Picker.Item key={'none'} label={'none'} value={null} />
                                             {storyTags.characters.map((character) => (
                                                 <Picker.Item
                                                     key={character}
@@ -225,7 +225,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Сеттинг</Text>
                                     <View className="rounded border border-text-color px-2">
-                                        <Picker<string>
+                                        <Picker<string | null>
                                             selectedValue={ctx.spy(storyTagsAtoms.setting)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.setting(ctx, value);
@@ -235,7 +235,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={''} />
+                                            <Picker.Item key={'none'} label={'none'} value={null} />
                                             {storyTags.settings.map((setting) => (
                                                 <Picker.Item
                                                     key={setting}
@@ -251,7 +251,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Мотив</Text>
                                     <View className="rounded border border-text-color px-2">
-                                        <Picker<string>
+                                        <Picker<string | null>
                                             selectedValue={ctx.spy(storyTagsAtoms.plotMotif)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.plotMotif(ctx, value);
@@ -261,7 +261,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={''} />
+                                            <Picker.Item key={'none'} label={'none'} value={null} />
                                             {storyTags.plotMotifs.map((motif) => (
                                                 <Picker.Item
                                                     key={motif}
@@ -279,7 +279,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                         Нарративный стиль
                                     </Text>
                                     <View className="rounded border border-text-color px-2">
-                                        <Picker<string>
+                                        <Picker<string | null>
                                             selectedValue={ctx.spy(storyTagsAtoms.narrativeStyle)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.narrativeStyle(ctx, value);
@@ -289,7 +289,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={''} />
+                                            <Picker.Item key={'none'} label={'none'} value={null} />
                                             {storyTags.narrativeStyle.map((style) => (
                                                 <Picker.Item
                                                     key={style}
@@ -305,7 +305,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Тон</Text>
                                     <View className="rounded border border-text-color px-2">
-                                        <Picker<string>
+                                        <Picker<string | null>
                                             selectedValue={ctx.spy(storyTagsAtoms.tone)}
                                             onValueChange={(value) => {
                                                 storyTagsAtoms.tone(ctx, value);
@@ -315,7 +315,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={''} />
+                                            <Picker.Item key={'none'} label={'none'} value={null} />
                                             {storyTags.tone.map((tone) => (
                                                 <Picker.Item key={tone} label={tone} value={tone} />
                                             ))}

@@ -41,10 +41,10 @@ export const storySettingsAtoms = {
 
 // Атомы настроек сюжета
 export const storyTagsAtoms = {
-    character: atom<string>('Male protagonist', 'storyTagCharacter'),
+    character: atom<string | null>('Male protagonist', 'storyTagCharacter'),
     genres: atom<string[]>(['Fantasy'], 'storyTagGenre'),
-    setting: atom<string>('Middle Ages', 'storyTagSetting'),
-    plotMotif: atom<string>('Betrayal', 'storyTagPlotMotif'),
-    tone: atom<string>('Dark story', 'storyTagTone'),
-    narrativeStyle: atom<string>('First person', 'storyTagNarrativeStyle'),
+    setting: atom<string | null>('Middle Ages', 'storyTagSetting'),
+    plotMotif: atom<string | null>('Betrayal', 'storyTagPlotMotif'),
+    tone: atom<string | null>('Dark story', 'storyTagTone'),
+    narrativeStyle: atom<string | null>('First person', 'storyTagNarrativeStyle'),
 };

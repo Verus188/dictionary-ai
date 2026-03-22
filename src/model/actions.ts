@@ -22,17 +22,23 @@ import {
     StoryChunkVariants,
 } from './types';
 
+const normalizeOptionalSetting = (value: string | null): string | null => {
+    const normalizedValue = value?.trim() ?? '';
+
+    return normalizedValue === '' ? null : normalizedValue;
+};
+
 const buildStorySettings = (ctx: Ctx): StorySettings => ({
     chunkLength: Number(ctx.get(storySettingsAtoms.chunkLengthAtom)),
     educationLanguage: ctx.get(storySettingsAtoms.educationLanguageAtom),
     storyLanguageDifficulty: Number(ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom)),
     prompt: ctx.get(storySettingsAtoms.storyPromptAtom) || undefined,
-    character: ctx.get(storyTagsAtoms.character),
+    character: normalizeOptionalSetting(ctx.get(storyTagsAtoms.character)),
     genres: ctx.get(storyTagsAtoms.genres),
-    setting: ctx.get(storyTagsAtoms.setting),
-    plotMotif: ctx.get(storyTagsAtoms.plotMotif),
-    narrativeStyle: ctx.get(storyTagsAtoms.narrativeStyle),
-    tone: ctx.get(storyTagsAtoms.tone),
+    setting: normalizeOptionalSetting(ctx.get(storyTagsAtoms.setting)),
+    plotMotif: normalizeOptionalSetting(ctx.get(storyTagsAtoms.plotMotif)),
+    narrativeStyle: normalizeOptionalSetting(ctx.get(storyTagsAtoms.narrativeStyle)),
+    tone: normalizeOptionalSetting(ctx.get(storyTagsAtoms.tone)),
 });
 
 const mapDictionaryCardsToDto = (dictionaryCards: DictionaryCardInfo[]): DictionaryCardDto[] => {

@@ -8,12 +8,12 @@ export type StorySettings = {
     chunkLength: number;
     storyLanguageDifficulty: number;
     prompt?: string;
-    character: string;
+    character: string | null;
     genres: string[];
-    setting: string;
-    plotMotif: string;
-    narrativeStyle: string;
-    tone: string;
+    setting: string | null;
+    plotMotif: string | null;
+    narrativeStyle: string | null;
+    tone: string | null;
 };
 
 export type DictionaryCardDto = {
