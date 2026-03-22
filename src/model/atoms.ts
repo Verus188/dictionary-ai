@@ -30,10 +30,6 @@ export const isInitStoryLoadingAtom = atom<boolean>(false, 'isInitStoryLoadingAt
 
 // Атомы настроек
 export const storySettingsAtoms = {
-    /** Токен для openRouter */
-    openRouterTokenAtom: atom<string>('', 'openRouterTokenAtom'),
-    /** Выбранна модель нейросети */
-    AIModelAtom: atom<string>('gemini', 'AIModelAtom'),
     /** язык, который изучается пользователем */
     educationLanguageAtom: atom<string>('English', 'educationLanguageAtom'),
     /** насколько длинные куски истории */

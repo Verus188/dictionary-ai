@@ -2,7 +2,6 @@ import { reatomContext } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { AppToast } from '../components/app-toast';
-import { setAIController } from '../entities/AIController';
 import sqliteBD from '../entities/sqliteDB';
 import { reatomCtx, storySettingsAtoms } from '../model/atoms';
 
@@ -24,8 +23,6 @@ export default function RootLayout() {
             value TEXT
           );
           INSERT INTO settings (setting, value) VALUES 
-          ('AIModel', 'gemini'),
-          ('openRouterToken', NULL),
           ('storyContinuationLength', '800'),
           ('educationLanguage', 'English'),
           ('storyLanguageDifficulty', '2')
@@ -39,25 +36,8 @@ export default function RootLayout() {
                 const {
                     storyLanguageDifficultyAtom: storyLanguageDifficulty,
                     educationLanguageAtom: educationLanguage,
-                    openRouterTokenAtom: openRouterToken,
-                    AIModelAtom: AIModel,
                     chunkLengthAtom: chunkLength,
                 } = storySettingsAtoms;
-
-                const savedAIModel =
-                    (settings.AIModel ?? ctx.get(AIModel)) === 'gemeni'
-                        ? 'gemini'
-                        : (settings.AIModel ?? ctx.get(AIModel));
-                AIModel(ctx, savedAIModel);
-                setAIController(savedAIModel);
-
-                if (settings.AIModel === 'gemeni') {
-                    await sqliteBD.setSetting(db, 'AIModel', 'gemini');
-                }
-
-                if (settings.openRouterToken !== undefined) {
-                    openRouterToken(ctx, settings.openRouterToken ?? '');
-                }
 
                 const savedEducationLanguage =
                     settings.educationLanguage ?? settings.educationlanguage;

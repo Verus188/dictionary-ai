@@ -14,15 +14,11 @@ import storyTagsJson from '../data/story-tags.json';
 export const StorySettingsPage = reatomComponent(({ ctx }) => {
     const db = useSQLiteContext();
     const {
-        openRouterTokenAtom,
-        AIModelAtom,
         storyPromptAtom,
         chunkLengthAtom,
         storyLanguageDifficultyAtom,
         educationLanguageAtom,
     } = storySettingsAtoms;
-    const token = ctx.spy(storySettingsAtoms.openRouterTokenAtom);
-    const AIModel = ctx.spy(storySettingsAtoms.AIModelAtom);
     const isInitLoading = ctx.spy(isInitStoryLoadingAtom);
     const storyTags: StoryTagsType = storyTagsJson as StoryTagsType;
     const pickerStyle = {
@@ -169,7 +165,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                         <Picker<string>
                                             selectedValue={ctx.spy(storyTagsAtoms.character)}
                                             onValueChange={(value) => {
-                                                storyTagsAtoms.setting(ctx, value);
+                                                storyTagsAtoms.character(ctx, value);
                                             }}
                                             className="py-1"
                                             style={pickerStyle}

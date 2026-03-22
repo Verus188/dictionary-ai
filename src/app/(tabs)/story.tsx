@@ -17,10 +17,15 @@ const StoryScreen = reatomComponent(({ ctx }) => {
 
     const handleChooseAction = async (continuation?: StoryChunk) => {
         if (continuation) {
+            storyAtom(ctx, (prev) => {
+                if (!prev) {
+                    return continuation.text;
+                }
+
+                return `${prev}\n${continuation.text}`;
+            });
             storyChunkAtom(ctx, continuation);
         }
-
-        storyAtom(ctx, (prev) => prev + '\n' + displayerChunk?.text);
         const story = ctx.get(storyAtom);
 
         if (!story) return;

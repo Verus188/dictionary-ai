@@ -1,15 +1,9 @@
 import { reatomAsync } from '@reatom/async';
-import { AtomMut } from '@reatom/core';
+import { AtomMut, Ctx } from '@reatom/core';
 import { SQLiteDatabase } from 'expo-sqlite';
-import { AIController } from '../entities/AIController';
+import { continueStory, initStory } from '../entities/api/story/story';
 import sqliteBD from '../entities/sqliteDB';
-import { getStoryActionsPrompt } from '../prompts/get-story-actions-prompt';
-import { getStoryContinuationPrompt } from '../prompts/get-story-continuation-prompt';
-import { getStoryInitializationPrompt } from '../prompts/get-story-initialization-prompt';
 import { showErrorToast } from '../components/app-toast';
-import { storyActionsSystemPrompt } from '../prompts/story-actions-system-prompt';
-import { storyContinuationSystemPrompt } from '../prompts/story-continuation-system-prompt';
-import { storyInitializationSystemPrompt } from '../prompts/story-initialization-system-prompt';
 import {
     dictionaryCardsAtom,
     isInitStoryLoadingAtom,
@@ -19,7 +13,34 @@ import {
     storySettingsAtoms,
     storyTagsAtoms,
 } from './atoms';
-import { ChunkActions, StoryChunk, StoryChunkVariants } from './types';
+import {
+    ContinueStoryRequest,
+    DictionaryCardInfo,
+    DictionaryCardDto,
+    InitStoryRequest,
+    StorySettings,
+    StoryChunkVariants,
+} from './types';
+
+const buildStorySettings = (ctx: Ctx): StorySettings => ({
+    chunkLength: Number(ctx.get(storySettingsAtoms.chunkLengthAtom)),
+    educationLanguage: ctx.get(storySettingsAtoms.educationLanguageAtom),
+    storyLanguageDifficulty: Number(ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom)),
+    prompt: ctx.get(storySettingsAtoms.storyPromptAtom) || undefined,
+    character: ctx.get(storyTagsAtoms.character),
+    genres: ctx.get(storyTagsAtoms.genres),
+    setting: ctx.get(storyTagsAtoms.setting),
+    plotMotif: ctx.get(storyTagsAtoms.plotMotif),
+    narrativeStyle: ctx.get(storyTagsAtoms.narrativeStyle),
+    tone: ctx.get(storyTagsAtoms.tone),
+});
+
+const mapDictionaryCardsToDto = (dictionaryCards: DictionaryCardInfo[]): DictionaryCardDto[] => {
+    return dictionaryCards.map((card) => ({
+        id: card.id,
+        text: card.card,
+    }));
+};
 
 export const addDictionaryCardAction = reatomAsync(
     async (ctx, db: SQLiteDatabase, card: string) => {
@@ -51,29 +72,12 @@ export const setSettingAction = reatomAsync(
 export const initStoryAction = reatomAsync(async (ctx) => {
     isInitStoryLoadingAtom(ctx, true);
     try {
-        const response = (
-            await AIController.generateAIText(
-                getStoryInitializationPrompt(
-                    storyInitializationSystemPrompt,
-                    ctx.get(storySettingsAtoms.chunkLengthAtom),
-                    ctx.get(storySettingsAtoms.educationLanguageAtom),
-                    ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
-                    ctx.get(dictionaryCardsAtom),
-                    ctx.get(storySettingsAtoms.storyPromptAtom),
-                    ctx.get(storyTagsAtoms.character),
-                    ctx.get(storyTagsAtoms.genres),
-                    ctx.get(storyTagsAtoms.setting),
-                    ctx.get(storyTagsAtoms.plotMotif),
-                    ctx.get(storyTagsAtoms.narrativeStyle),
-                    ctx.get(storyTagsAtoms.tone),
-                ),
-                ctx,
-            )
-        )
-            .replace(/```json|```/g, '')
-            .trim();
+        const payload: InitStoryRequest = {
+            settings: buildStorySettings(ctx),
+            cards: mapDictionaryCardsToDto(ctx.get(dictionaryCardsAtom)),
+        };
 
-        const chunk = JSON.parse(response) as StoryChunk;
+        const chunk = await initStory(payload);
         storyAtom(ctx, chunk.text);
         storyChunkAtom(ctx, chunk);
         nextStoryChunksResource(ctx);
@@ -93,68 +97,23 @@ export const initStoryAction = reatomAsync(async (ctx) => {
 export const generateStoryChunksAction = reatomAsync(async (ctx): Promise<StoryChunkVariants> => {
     try {
         const chunk = ctx.get(storyChunkAtom);
+        const story = ctx.get(storyAtom);
 
-        if (!chunk) {
+        if (!chunk || !story) {
             throw new Error('No story found');
         }
 
-        const response = (
-            await AIController.generateAIText(
-                getStoryContinuationPrompt(
-                    ctx.get(storyAtom) || '',
-                    storyContinuationSystemPrompt,
-                    chunk.actions,
-                    ctx.get(storySettingsAtoms.chunkLengthAtom),
-                    ctx.get(storySettingsAtoms.educationLanguageAtom),
-                    ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
-                    ctx.get(dictionaryCardsAtom),
-                ),
-                ctx,
-            )
-        )
-            .replace(/```json|```/g, '')
-            .trim();
+        const payload: ContinueStoryRequest = {
+            story,
+            actions: chunk.actions,
+            settings: buildStorySettings(ctx),
+            cards: mapDictionaryCardsToDto(ctx.get(dictionaryCardsAtom)),
+        };
 
-        return JSON.parse(response) as StoryChunkVariants;
+        return continueStory(payload);
     } catch (error) {
         console.error(error);
         showErrorToast('Не удалось сгенерировать продолжение истории');
         throw new Error('Error generating story');
-    }
-});
-
-/**
- * Генерирует два действия, которые может совершить читатель на основе переданного контекста
- * Работает только в рамка nextStoryChunksResource
- */
-export const generateStoryActionsAction = reatomAsync(async (ctx): Promise<ChunkActions> => {
-    const story = ctx.get(storyAtom);
-    try {
-        if (!story) {
-            throw new Error('No story found');
-        }
-
-        const response = (
-            await AIController.generateAIText(
-                getStoryActionsPrompt(
-                    story,
-                    storyActionsSystemPrompt,
-                    ctx.get(storySettingsAtoms.chunkLengthAtom),
-                    ctx.get(storySettingsAtoms.educationLanguageAtom),
-                    ctx.get(storySettingsAtoms.storyLanguageDifficultyAtom),
-                    ctx.get(dictionaryCardsAtom),
-                ),
-                ctx,
-            )
-        )
-            .replace(/```json|```/g, '')
-            .trim();
-        console.log('response', response);
-
-        return JSON.parse(response) as ChunkActions;
-    } catch (error) {
-        console.error(error);
-        showErrorToast('Не удалось сгенерировать варианты действий');
-        throw new Error('Error generating actions');
     }
 });
