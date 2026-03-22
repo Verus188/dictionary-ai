@@ -14,10 +14,6 @@ export default function RootLayout() {
             onInit={async (db) => {
                 await db.execAsync(`
         PRAGMA journal_mode = WAL;
-          CREATE TABLE IF NOT EXISTS dictionaryCards (
-            id INTEGER PRIMARY KEY NOT NULL,
-            card TEXT NOT NULL
-          );
           CREATE TABLE IF NOT EXISTS settings (
             setting TEXT PRIMARY KEY NOT NULL,
             value TEXT
@@ -28,6 +24,8 @@ export default function RootLayout() {
           ('storyLanguageDifficulty', '2')
           ON CONFLICT(setting) DO NOTHING;
         `);
+
+                await sqliteBD.ensureDictionaryCardsTable(db);
 
                 const settings = await sqliteBD.getSettings(db);
 
