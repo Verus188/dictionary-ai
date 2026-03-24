@@ -23,6 +23,7 @@ Architecture rules:
 - Feature modules may depend on `shared/*`, but should not depend on other features unless the dependency is explicitly intentional and minimal.
 - Shared modules must not import from `features/*` or `app/*`.
 - Persistence and API code must not import from UI or route modules.
+- In a feature `ui/` folder, keep the main screen or entry component at the top level. If the feature has additional UI pieces, place them in `ui/parts/`.
 - Reatom atoms/actions should live inside the feature they belong to instead of a single global `src/model` module.
 - Toasts, alerts, and other UI side effects should be triggered from presentation/feature boundaries, not from low-level API or DB helpers.
 - Prefer repository-style adapters between feature logic and infrastructure so story and dictionary flows are easier to test and refactor.

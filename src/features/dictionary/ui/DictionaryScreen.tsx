@@ -12,7 +12,7 @@ import {
 } from '@/src/features/dictionary/model/atoms';
 import { getColor } from '@/src/shared/theme/getColor';
 import { InputModal } from '@/src/shared/ui/InputModal';
-import { DictionaryCardsList } from './DictionaryCardsList';
+import { DictionaryCardsList } from './parts/DictionaryCardsList';
 
 export const DictionaryScreen = reatomComponent(({ ctx }) => {
     const db = useSQLiteContext();
