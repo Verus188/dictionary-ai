@@ -1,12 +1,13 @@
-import axios from 'axios';
 import {
     ContinueStoryApiRequest,
     ContinueStoryApiResponse,
     InitStoryApiRequest,
     InitStoryApiResponse,
 } from '@/src/shared/api/story/types';
+import axios from 'axios';
 
-export const AI_API_BASE_URL = 'http://localhost:3000';
+export const AI_API_BASE_URL = 'https://dictionary-ai-be.onrender.com';
+// export const AI_API_BASE_URL = 'http://localhost:3000';
 
 const STORY_INIT_PATH = 'ai/story/init';
 const STORY_CONTINUE_PATH = 'ai/story/continue';
