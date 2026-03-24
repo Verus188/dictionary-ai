@@ -1,8 +1,3 @@
-export type DictionaryCardInfo = {
-    card: string;
-    id: string;
-};
-
 export type StorySettings = {
     educationLanguage: string;
     chunkLength: number;
@@ -52,12 +47,7 @@ export type ContinueStoryRequest = {
 
 export type ContinueStoryResponse = StoryChunkVariants;
 
-export type InitStoryInfo = {
-    story: string;
-    chunks: StoryChunkVariants;
-};
-
-export type StoryTagsType = {
+export type StoryTagsCatalog = {
     characters: string[];
     genres: string[];
     settings: string[];

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import Toast, { ErrorToast, ToastConfig } from 'react-native-toast-message';
-import { colors } from '../theme/colors';
+import { colors } from '@/src/shared/theme/colors';
 
 const DEFAULT_ERROR_TITLE = 'Ошибка';
 const DEFAULT_ERROR_MESSAGE = 'Что-то пошло не так. Попробуйте еще раз.';

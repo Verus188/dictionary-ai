@@ -3,7 +3,7 @@ import {
     ContinueStoryResponse,
     InitStoryRequest,
     InitStoryResponse,
-} from '@/src/model/types';
+} from '@/src/shared/types/story';
 
 export type InitStoryApiRequest = InitStoryRequest;
 export type InitStoryApiResponse = InitStoryResponse;

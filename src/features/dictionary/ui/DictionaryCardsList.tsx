@@ -1,25 +1,20 @@
 import { reatomComponent } from '@reatom/npm-react';
 import { useSQLiteContext } from 'expo-sqlite';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Alert, Platform, View, ViewProps } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-import sqliteBD from '../entities/sqliteDB';
-import { deleteDictionaryCardAction } from '../model/actions';
-import { dictionaryCardsAtom } from '../model/atoms';
-import { DictionaryCard } from './dictionary-card';
+import { deleteDictionaryCardAction } from '@/src/features/dictionary/model/actions';
+import { dictionaryCardsAtom } from '@/src/features/dictionary/model/atoms';
+import { DictionaryCard } from './DictionaryCard';
 
-type DictionaryCardsListProps = {} & ViewProps;
+type DictionaryCardsListProps = ViewProps & {
+    className?: string;
+};
 
 export const DictionaryCardsList: FC<DictionaryCardsListProps> = reatomComponent(
     ({ ctx, className, ...rest }) => {
         const db = useSQLiteContext();
         const cardsList = ctx.spy(dictionaryCardsAtom);
-
-        useEffect(() => {
-            sqliteBD.getAllCards(db).then((cards) => {
-                dictionaryCardsAtom(ctx, cards);
-            });
-        }, []);
 
         return (
             <View {...rest} className={twMerge('flex flex-col gap-4', className)}>
@@ -33,7 +28,10 @@ export const DictionaryCardsList: FC<DictionaryCardsListProps> = reatomComponent
                                 const ok = window.confirm(
                                     `Are you sure you want to delete '${card.card}' card?`,
                                 );
-                                if (!ok) return;
+                                if (!ok) {
+                                    return;
+                                }
+
                                 deleteDictionaryCardAction(ctx, db, id);
                                 return;
                             }

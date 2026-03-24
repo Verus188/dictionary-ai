@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { getColor } from '@/src/helpers/tw-colors';
 import { FC } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { getColor } from '@/src/shared/theme/getColor';
 
 type DictionaryCardProps = {
     id: string;
@@ -11,8 +11,8 @@ type DictionaryCardProps = {
 
 export const DictionaryCard: FC<DictionaryCardProps> = ({ card, id, onDelete }) => {
     return (
-        <View className="flex gap-2 flex-row w-full px-4 py-4 border-2 border-card-border-color bg-card-bg rounded-lg">
-            <Text className="flex-1 text-text-color text-xl">{card}</Text>
+        <View className="flex w-full flex-row gap-2 rounded-lg border-2 border-card-border-color bg-card-bg px-4 py-4">
+            <Text className="flex-1 text-xl text-text-color">{card}</Text>
             <Pressable
                 onPress={() => {
                     onDelete?.(id);

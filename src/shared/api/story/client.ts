@@ -4,7 +4,7 @@ import {
     ContinueStoryApiResponse,
     InitStoryApiRequest,
     InitStoryApiResponse,
-} from './types';
+} from '@/src/shared/api/story/types';
 
 export const AI_API_BASE_URL = 'http://localhost:3000';
 

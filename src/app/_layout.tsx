@@ -1,59 +1,15 @@
 import { reatomContext } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
-import { AppToast } from '../components/app-toast';
-import sqliteBD from '../entities/sqliteDB';
-import { reatomCtx, storySettingsAtoms } from '../model/atoms';
+import { initializeApp } from '@/src/app/bootstrap/initialize-app';
+import { reatomCtx } from '@/src/app/providers/reatom';
+import { AppToast } from '@/src/shared/ui/AppToast';
 
-// DELETE FROM dictionaryCards;
-// DELETE FROM settings;
 export default function RootLayout() {
     return (
         <SQLiteProvider
             databaseName="dictionary.db"
-            onInit={async (db) => {
-                await db.execAsync(`
-        PRAGMA journal_mode = WAL;
-          CREATE TABLE IF NOT EXISTS settings (
-            setting TEXT PRIMARY KEY NOT NULL,
-            value TEXT
-          );
-          INSERT INTO settings (setting, value) VALUES 
-          ('storyContinuationLength', '800'),
-          ('educationLanguage', 'English'),
-          ('storyLanguageDifficulty', '2')
-          ON CONFLICT(setting) DO NOTHING;
-        `);
-
-                await sqliteBD.ensureDictionaryCardsTable(db);
-
-                const settings = await sqliteBD.getSettings(db);
-
-                const ctx = reatomCtx;
-
-                const {
-                    storyLanguageDifficultyAtom: storyLanguageDifficulty,
-                    educationLanguageAtom: educationLanguage,
-                    chunkLengthAtom: chunkLength,
-                } = storySettingsAtoms;
-
-                const savedEducationLanguage =
-                    settings.educationLanguage ?? settings.educationlanguage;
-                if (savedEducationLanguage !== undefined && savedEducationLanguage !== null) {
-                    educationLanguage(ctx, savedEducationLanguage);
-                }
-
-                if (settings.storyContinuationLength !== undefined) {
-                    chunkLength(ctx, settings.storyContinuationLength ?? ctx.get(chunkLength));
-                }
-
-                if (settings.storyLanguageDifficulty !== undefined) {
-                    storyLanguageDifficulty(
-                        ctx,
-                        settings.storyLanguageDifficulty ?? ctx.get(storyLanguageDifficulty),
-                    );
-                }
-            }}
+            onInit={initializeApp}
             options={{ useNewConnection: false }}
         >
             <reatomContext.Provider value={reatomCtx}>

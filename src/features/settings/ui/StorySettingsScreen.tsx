@@ -1,17 +1,20 @@
-import { getColor } from '@/src/helpers/tw-colors';
-import { initStoryAction, setSettingAction } from '@/src/model/actions';
-import { isInitStoryLoadingAtom, storySettingsAtoms, storyTagsAtoms } from '@/src/model/atoms';
-import { StoryTagsType } from '@/src/model/types';
 import { Picker } from '@react-native-picker/picker';
 import { reatomComponent } from '@reatom/npm-react';
 import { Checkbox } from 'expo-checkbox';
 import { useSQLiteContext } from 'expo-sqlite';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../components/button';
-import storyTagsJson from '../data/story-tags.json';
+import { initStoryAction } from '@/src/features/story/model/actions';
+import { storyTagsAtoms, storySettingsAtoms } from '@/src/features/settings/model/atoms';
+import { persistedStorySettingKeys } from '@/src/features/settings/model/constants';
+import { updatePersistedSettingAction } from '@/src/features/settings/model/actions';
+import storyTagsJson from '@/src/data/story-tags.json';
+import { getColor } from '@/src/shared/theme/getColor';
+import { StoryTagsCatalog } from '@/src/shared/types/story';
+import { Button } from '@/src/shared/ui/Button';
+import { isInitStoryLoadingAtom } from '@/src/features/story/model/atoms';
 
-export const StorySettingsPage = reatomComponent(({ ctx }) => {
+export const StorySettingsScreen = reatomComponent(({ ctx }) => {
     const db = useSQLiteContext();
     const {
         storyPromptAtom,
@@ -20,7 +23,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
         educationLanguageAtom,
     } = storySettingsAtoms;
     const isInitLoading = ctx.spy(isInitStoryLoadingAtom);
-    const storyTags: StoryTagsType = storyTagsJson as StoryTagsType;
+    const storyTags = storyTagsJson as StoryTagsCatalog;
     const pickerStyle = {
         height: 'auto' as const,
         color: getColor('text-color'),
@@ -28,15 +31,14 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
     };
 
     return (
-        <View className="flex-1 bg-main-bg items-center">
-            <ScrollView className="flex-1 w-full px-8 py-4 max-w-[800px]">
+        <View className="flex-1 items-center bg-main-bg">
+            <ScrollView className="flex-1 w-full max-w-[800px] px-8 py-4">
                 <SafeAreaView className="flex-1">
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                         style={{ flex: 1 }}
                     >
                         <View className="flex flex-col gap-8">
-                            {/* настройка длинны продолжений */}
                             <View className="flex gap-2">
                                 <Text className="text-lg text-text-color">
                                     Насколько длинные кусочки истории
@@ -45,11 +47,11 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     <Picker<string>
                                         selectedValue={ctx.spy(chunkLengthAtom)}
                                         onValueChange={(value) => {
-                                            setSettingAction(
+                                            updatePersistedSettingAction(
                                                 ctx,
                                                 db,
                                                 chunkLengthAtom,
-                                                'storyContinuationLength',
+                                                persistedStorySettingKeys.chunkLength,
                                                 value,
                                             );
                                         }}
@@ -66,18 +68,17 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 </View>
                             </View>
 
-                            {/* Выбор языка повествования */}
                             <View className="flex gap-2">
                                 <Text className="text-lg text-text-color">Язык повествования</Text>
                                 <View className="rounded border border-text-color px-2">
                                     <Picker<string>
                                         selectedValue={ctx.spy(educationLanguageAtom)}
                                         onValueChange={(value) => {
-                                            setSettingAction(
+                                            updatePersistedSettingAction(
                                                 ctx,
                                                 db,
                                                 educationLanguageAtom,
-                                                'educationLanguage',
+                                                persistedStorySettingKeys.educationLanguage,
                                                 value,
                                             );
                                         }}
@@ -104,7 +105,6 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 </View>
                             </View>
 
-                            {/* Сложность языка повествования */}
                             <View className="flex gap-2">
                                 <Text className="text-lg text-text-color">
                                     Сложность языка истории
@@ -113,11 +113,11 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     <Picker<string>
                                         selectedValue={ctx.spy(storyLanguageDifficultyAtom)}
                                         onValueChange={(value) => {
-                                            setSettingAction(
+                                            updatePersistedSettingAction(
                                                 ctx,
                                                 db,
                                                 storyLanguageDifficultyAtom,
-                                                'storyLanguageDifficulty',
+                                                persistedStorySettingKeys.storyLanguageDifficulty,
                                                 value,
                                             );
                                         }}
@@ -142,7 +142,6 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                         Настройки сюжета
                                     </Text>
 
-                                    {/* Промт сюжета */}
                                     <Text className="text-lg text-text-color">Промт сюжета</Text>
                                     <Text className="text-sm text-text-color">
                                         Здесь можно задать дополнительный контекст для генерации или
@@ -151,14 +150,13 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     <TextInput
                                         multiline
                                         value={ctx.spy(storyPromptAtom) || ''}
-                                        className="h-40 text-warning-color border border-text-color rounded py-1 px-1"
-                                        onChange={(e) => {
-                                            storyPromptAtom(ctx, e.nativeEvent.text);
+                                        className="h-40 rounded border border-text-color px-1 py-1 text-warning-color"
+                                        onChange={(event) => {
+                                            storyPromptAtom(ctx, event.nativeEvent.text);
                                         }}
                                     />
                                 </View>
 
-                                {/* Главный герой */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Главный герой</Text>
                                     <View className="rounded border border-text-color px-2">
@@ -172,7 +170,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={null} />
+                                            <Picker.Item key="none" label="none" value={null} />
                                             {storyTags.characters.map((character) => (
                                                 <Picker.Item
                                                     key={character}
@@ -184,36 +182,35 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     </View>
                                 </View>
 
-                                {/* Жанры */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Жанры</Text>
                                     <View className="flex gap-2 p-2">
                                         {storyTags.genres.map((genre) => (
                                             <View
-                                                className="flex gap-2 flex-row items-center"
+                                                className="flex flex-row items-center gap-2"
                                                 key={genre}
                                             >
                                                 <Checkbox
                                                     className="size-5"
-                                                    value={ctx
-                                                        .spy(storyTagsAtoms.genres)
-                                                        .includes(genre)}
+                                                    value={ctx.spy(storyTagsAtoms.genres).includes(genre)}
                                                     onValueChange={(value) => {
                                                         if (value) {
                                                             storyTagsAtoms.genres(ctx, [
                                                                 ...ctx.get(storyTagsAtoms.genres),
                                                                 genre,
                                                             ]);
-                                                        } else {
-                                                            storyTagsAtoms.genres(ctx, [
-                                                                ...ctx
-                                                                    .get(storyTagsAtoms.genres)
-                                                                    .filter((g) => g !== genre),
-                                                            ]);
+                                                            return;
                                                         }
+
+                                                        storyTagsAtoms.genres(
+                                                            ctx,
+                                                            ctx
+                                                                .get(storyTagsAtoms.genres)
+                                                                .filter((item) => item !== genre),
+                                                        );
                                                     }}
                                                 />
-                                                <Text className="text-text-color text-lg">
+                                                <Text className="text-lg text-text-color">
                                                     {genre}
                                                 </Text>
                                             </View>
@@ -221,7 +218,6 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     </View>
                                 </View>
 
-                                {/* Сеттинги */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Сеттинг</Text>
                                     <View className="rounded border border-text-color px-2">
@@ -235,7 +231,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={null} />
+                                            <Picker.Item key="none" label="none" value={null} />
                                             {storyTags.settings.map((setting) => (
                                                 <Picker.Item
                                                     key={setting}
@@ -247,7 +243,6 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                     </View>
                                 </View>
 
-                                {/* Мотивы сюжета */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Мотив</Text>
                                     <View className="rounded border border-text-color px-2">
@@ -261,19 +256,14 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={null} />
+                                            <Picker.Item key="none" label="none" value={null} />
                                             {storyTags.plotMotifs.map((motif) => (
-                                                <Picker.Item
-                                                    key={motif}
-                                                    label={motif}
-                                                    value={motif}
-                                                />
+                                                <Picker.Item key={motif} label={motif} value={motif} />
                                             ))}
                                         </Picker>
                                     </View>
                                 </View>
 
-                                {/* Нарративный стиль */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">
                                         Нарративный стиль
@@ -289,19 +279,14 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={null} />
+                                            <Picker.Item key="none" label="none" value={null} />
                                             {storyTags.narrativeStyle.map((style) => (
-                                                <Picker.Item
-                                                    key={style}
-                                                    label={style}
-                                                    value={style}
-                                                />
+                                                <Picker.Item key={style} label={style} value={style} />
                                             ))}
                                         </Picker>
                                     </View>
                                 </View>
 
-                                {/* Тон истории */}
                                 <View className="flex gap-2">
                                     <Text className="text-lg text-text-color">Тон</Text>
                                     <View className="rounded border border-text-color px-2">
@@ -315,7 +300,7 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                             dropdownIconColor={getColor('text-color')}
                                             mode="dropdown"
                                         >
-                                            <Picker.Item key={'none'} label={'none'} value={null} />
+                                            <Picker.Item key="none" label="none" value={null} />
                                             {storyTags.tone.map((tone) => (
                                                 <Picker.Item key={tone} label={tone} value={tone} />
                                             ))}
@@ -333,10 +318,10 @@ export const StorySettingsPage = reatomComponent(({ ctx }) => {
                                 }}
                                 disabled={isInitLoading}
                                 className={`py-2 ${
-                                    isInitLoading ? 'opacity-50 pointer-events-none' : ''
+                                    isInitLoading ? 'pointer-events-none opacity-50' : ''
                                 }`}
                             >
-                                <Text className="text-text-color text-lg">
+                                <Text className="text-lg text-text-color">
                                     Сгенерировать историю
                                 </Text>
                             </Button>

@@ -1,11 +1,10 @@
-import { SpinningIcon } from '@/src/components/spinning-icon';
-import { getColor } from '@/src/helpers/tw-colors';
 import {
-    isCardModalVisibleAtom,
-    nextStoryChunksResource,
-    storyAtom,
-    storyChunkAtom,
-} from '@/src/model/atoms';
+    openDictionaryCardModal,
+} from '@/src/features/dictionary/model/actions';
+import { nextStoryChunksResource } from '@/src/features/story/model/atoms';
+import { resetStoryAction } from '@/src/features/story/model/actions';
+import { getColor } from '@/src/shared/theme/getColor';
+import { SpinningIcon } from '@/src/shared/ui/SpinningIcon';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { reatomComponent } from '@reatom/npm-react';
 import { Tabs } from 'expo-router';
@@ -40,7 +39,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
                         <Pressable
                             className="px-4"
                             onPress={() => {
-                                isCardModalVisibleAtom(ctx, true);
+                                openDictionaryCardModal(ctx);
                             }}
                         >
                             <Text className="text-accent-color-strong capitalize">add</Text>
@@ -66,9 +65,7 @@ const TabLayout = reatomComponent(({ ctx }) => {
                                 <Pressable
                                     className="px-4"
                                     onPress={() => {
-                                        nextStoryChunksResource.reset(ctx);
-                                        storyChunkAtom(ctx, null);
-                                        storyAtom(ctx, null);
+                                        resetStoryAction(ctx);
                                     }}
                                 >
                                     <Text className="text-accent-color-strong capitalize">

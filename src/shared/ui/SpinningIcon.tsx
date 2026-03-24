@@ -1,32 +1,36 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { getColor } from '@/src/helpers/tw-colors';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
+import { getColor } from '@/src/shared/theme/getColor';
 
 export const SpinningIcon = () => {
     const spinValue = useRef(new Animated.Value(0)).current;
-    const animRef = useRef<Animated.CompositeAnimation | null>(null);
+    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
     useEffect(() => {
         let isMounted = true;
 
         const spinOnce = () => {
             spinValue.setValue(0);
-            animRef.current = Animated.timing(spinValue, {
+            animationRef.current = Animated.timing(spinValue, {
                 toValue: 1,
                 duration: 1000,
                 easing: Easing.linear,
                 useNativeDriver: true,
             });
-            animRef.current.start(({ finished }) => {
-                if (finished && isMounted) spinOnce(); // запускаем снова
+
+            animationRef.current.start(({ finished }) => {
+                if (finished && isMounted) {
+                    spinOnce();
+                }
             });
         };
 
         spinOnce();
+
         return () => {
             isMounted = false;
-            animRef.current?.stop();
+            animationRef.current?.stop();
         };
     }, [spinValue]);
 
