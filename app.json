@@ -55,8 +55,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "4812ef2a-3ee0-488f-9417-ea2e94c3098e"
+        "projectId": "5e2249d1-99aa-4891-ac96-8d9e26695b15"
       }
-    }
+    },
+    "owner": "verus03188"
   }
 }
