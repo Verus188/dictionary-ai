@@ -4,8 +4,25 @@ export const persistedStorySettingKeys = {
     storyLanguageDifficulty: 'storyLanguageDifficulty',
 } as const;
 
+export const defaultStorySettingsState = {
+    chunkLength: '800',
+    educationLanguage: 'English',
+    storyLanguageDifficulty: '2',
+    storyPrompt: '',
+} as const;
+
 export const defaultPersistedStorySettings: Record<string, string> = {
-    [persistedStorySettingKeys.chunkLength]: '800',
-    [persistedStorySettingKeys.educationLanguage]: 'English',
-    [persistedStorySettingKeys.storyLanguageDifficulty]: '2',
+    [persistedStorySettingKeys.chunkLength]: defaultStorySettingsState.chunkLength,
+    [persistedStorySettingKeys.educationLanguage]: defaultStorySettingsState.educationLanguage,
+    [persistedStorySettingKeys.storyLanguageDifficulty]:
+        defaultStorySettingsState.storyLanguageDifficulty,
 };
+
+export const defaultStoryTagsState = {
+    character: 'Male protagonist',
+    genres: ['Fantasy'],
+    setting: 'Middle Ages',
+    plotMotif: 'Betrayal',
+    tone: 'Dark story',
+    narrativeStyle: 'First person',
+} as const;
