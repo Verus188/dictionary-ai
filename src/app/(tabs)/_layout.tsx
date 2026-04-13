@@ -1,3 +1,5 @@
+import { logoutAction } from '@/src/features/auth/model/actions';
+import { authStatusAtom } from '@/src/features/auth/model/atoms';
 import {
     openDictionaryCardModal,
 } from '@/src/features/dictionary/model/actions';
@@ -9,13 +11,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { reatomComponent } from '@reatom/npm-react';
 import { Tabs } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import '../../global.css';
 
 const TabLayout = reatomComponent(({ ctx }) => {
     const isStoryLoading = ctx.spy(nextStoryChunksResource.pendingAtom);
+    const isAuthLoading = ctx.spy(authStatusAtom) === 'loading';
 
     return (
         <Tabs
+            initialRouteName="dictionary"
             screenOptions={{
                 tabBarStyle: {
                     backgroundColor: getColor('tabs-bg'),
@@ -29,6 +32,17 @@ const TabLayout = reatomComponent(({ ctx }) => {
                     color: getColor('text-color'),
                 },
                 headerShadowVisible: false,
+                headerLeft: () => (
+                    <Pressable
+                        className={`px-4 ${isAuthLoading ? 'opacity-50' : ''}`}
+                        disabled={isAuthLoading}
+                        onPress={() => {
+                            void logoutAction(ctx);
+                        }}
+                    >
+                        <Text className="text-accent-color-strong capitalize">logout</Text>
+                    </Pressable>
+                ),
             }}
         >
             <Tabs.Screen
