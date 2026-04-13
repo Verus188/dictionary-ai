@@ -9,7 +9,6 @@ import { AuthScreenLayout } from '@/src/features/auth/ui/parts/AuthScreenLayout'
 import { AuthTextField } from '@/src/features/auth/ui/parts/AuthTextField';
 import { getRegisterValidationError } from '@/src/features/auth/model/validation';
 import { Button } from '@/src/shared/ui/Button';
-import { showErrorToast } from '@/src/shared/ui/AppToast';
 
 export const RegisterScreen = reatomComponent(({ ctx }) => {
     const authStatus = ctx.spy(authStatusAtom);
@@ -35,7 +34,6 @@ export const RegisterScreen = reatomComponent(({ ctx }) => {
 
         if (validationError) {
             setFormError(validationError);
-            showErrorToast(validationError, 'Проверьте форму');
             return;
         }
 

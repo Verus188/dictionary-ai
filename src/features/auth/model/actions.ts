@@ -8,8 +8,6 @@ import {
 import { AuthSession, LoginRequest, RegisterRequest } from '@/src/shared/types/auth';
 import { showErrorToast } from '@/src/shared/ui/AppToast';
 import {
-    getLoginErrorMessage,
-    getRegisterErrorMessage,
     getSessionRestoreErrorMessage,
     isUnauthorizedError,
 } from './errors';
@@ -57,7 +55,6 @@ export const loginAction = reatomAsync(async (ctx, payload: LoginRequest) => {
         return session;
     } catch (error) {
         resetInMemorySession(ctx);
-        showErrorToast(getLoginErrorMessage(error), 'Не удалось войти');
         throw error;
     }
 }, 'login');
@@ -72,7 +69,6 @@ export const registerAction = reatomAsync(async (ctx, payload: RegisterRequest) 
         return session;
     } catch (error) {
         resetInMemorySession(ctx);
-        showErrorToast(getRegisterErrorMessage(error), 'Не удалось зарегистрироваться');
         throw error;
     }
 }, 'register');
