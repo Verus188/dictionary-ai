@@ -3,6 +3,7 @@ import { reatomComponent } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { Platform } from 'react-native';
+import { authBootstrapAtom } from '@/src/features/auth/model/bootstrap';
 import { authUserAtom, isAuthBootstrapPendingAtom } from '@/src/features/auth/model/atoms';
 import { AuthGate } from '@/src/features/auth/ui/AuthGate';
 import { AuthLoadingScreen } from '@/src/features/auth/ui/parts/AuthLoadingScreen';
@@ -30,6 +31,7 @@ const RootStack = () => (
 );
 
 export const UserScopedApp = reatomComponent(({ ctx }) => {
+    ctx.spy(authBootstrapAtom);
     const authUser = ctx.spy(authUserAtom);
     const isAuthBootstrapPending = ctx.spy(isAuthBootstrapPendingAtom);
     const userId = authUser?.id ?? null;
