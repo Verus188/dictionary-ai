@@ -6,11 +6,10 @@ import {
 import { nextStoryChunksResource } from '@/src/features/story/model/atoms';
 import { resetStoryAction } from '@/src/features/story/model/actions';
 import { getColor } from '@/src/shared/theme/getColor';
-import { SpinningIcon } from '@/src/shared/ui/SpinningIcon';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { reatomComponent } from '@reatom/npm-react';
 import { Tabs } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 const TabLayout = reatomComponent(({ ctx }) => {
     const isStoryLoading = ctx.spy(nextStoryChunksResource.pendingAtom);
@@ -88,7 +87,10 @@ const TabLayout = reatomComponent(({ ctx }) => {
                                 </Pressable>
                                 {isStoryLoading && (
                                     <View className="flex justify-center items-center px-4">
-                                        <SpinningIcon />
+                                        <ActivityIndicator
+                                            size="small"
+                                            color={getColor('text-color')}
+                                        />
                                     </View>
                                 )}
                             </View>
