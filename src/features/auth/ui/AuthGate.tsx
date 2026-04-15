@@ -3,6 +3,7 @@ import { AuthLoadingScreen } from '@/src/features/auth/ui/parts/AuthLoadingScree
 import { reatomComponent } from '@reatom/npm-react';
 import { Redirect, useSegments } from 'expo-router';
 import { PropsWithChildren } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 const AUTH_ROUTES = new Set(['login', 'register']);
 const APP_HOME_ROUTE = '/(tabs)/dictionary' as const;
@@ -26,17 +27,27 @@ export const AuthGate = reatomComponent<PropsWithChildren>(({ children, ctx }) =
         redirectTo = GUEST_HOME_ROUTE;
     }
 
-    if (isAuthBootstrapPending || authStatus === 'idle') {
-        return <AuthLoadingScreen />;
-    }
+    const shouldShowLoading =
+        isAuthBootstrapPending || authStatus === 'idle' || (authStatus === 'loading' && !isAuthRoute);
 
-    if (redirectTo) {
-        return <Redirect href={redirectTo} />;
-    }
+    return (
+        <View style={styles.container}>
+            {children}
+            {redirectTo ? <Redirect href={redirectTo} /> : null}
+            {shouldShowLoading ? (
+                <View pointerEvents="auto" style={styles.loadingOverlay}>
+                    <AuthLoadingScreen />
+                </View>
+            ) : null}
+        </View>
+    );
+});
 
-    if (authStatus === 'loading' && !isAuthRoute) {
-        return <AuthLoadingScreen />;
-    }
-
-    return children;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+    },
 });

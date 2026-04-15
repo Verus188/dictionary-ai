@@ -1,21 +1,21 @@
+import { authUserAtom, isAuthBootstrapPendingAtom } from '@/src/features/auth/model/atoms';
+import { authBootstrapAtom } from '@/src/features/auth/model/bootstrap';
+import { AuthGate } from '@/src/features/auth/ui/AuthGate';
+import { AuthLoadingScreen } from '@/src/features/auth/ui/parts/AuthLoadingScreen';
+import { getColor } from '@/src/shared/theme/getColor';
 import { reatomComponent } from '@reatom/npm-react';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { Platform } from 'react-native';
-import { authBootstrapAtom } from '@/src/features/auth/model/bootstrap';
-import { authUserAtom, isAuthBootstrapPendingAtom } from '@/src/features/auth/model/atoms';
-import { AuthGate } from '@/src/features/auth/ui/AuthGate';
-import { AuthLoadingScreen } from '@/src/features/auth/ui/parts/AuthLoadingScreen';
-import { getColor } from '@/src/shared/theme/getColor';
 import { DatabaseLockedScreen } from './DatabaseLockedScreen';
+import { getUserDatabaseName } from './get-user-database-name';
+import { initializeApp } from './initialize-app';
 import {
     isUserDatabaseLockedAtom,
     isUserDatabaseReadyAtom,
     setUserDatabaseLockedAction,
     setUserDatabaseReadyAction,
 } from './model';
-import { initializeApp } from './initialize-app';
-import { getUserDatabaseName } from './get-user-database-name';
 import { SyncBootstrap } from './SyncBootstrap';
 
 const RootStack = () => (
