@@ -8,3 +8,5 @@ export const authStatusAtom = atom<AuthStatus>('idle', 'authStatusAtom');
 export const authAccessTokenAtom = atom<string | null>(null, 'authAccessTokenAtom');
 
 export const authUserAtom = atom<AuthUser | null>(null, 'authUserAtom');
+
+export const isAuthBootstrapPendingAtom = atom(true, 'isAuthBootstrapPendingAtom');

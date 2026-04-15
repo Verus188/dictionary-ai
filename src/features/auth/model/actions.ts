@@ -11,7 +11,12 @@ import {
     getSessionRestoreErrorMessage,
     isUnauthorizedError,
 } from './errors';
-import { authAccessTokenAtom, authStatusAtom, authUserAtom } from './atoms';
+import {
+    authAccessTokenAtom,
+    authStatusAtom,
+    authUserAtom,
+    isAuthBootstrapPendingAtom,
+} from './atoms';
 import { authSessionStorage } from './session-storage';
 
 const resetInMemorySession = (ctx: Ctx) => {
@@ -74,12 +79,14 @@ export const registerAction = reatomAsync(async (ctx, payload: RegisterRequest) 
 }, 'register');
 
 export const restoreAuthSessionAction = reatomAsync(async (ctx) => {
+    isAuthBootstrapPendingAtom(ctx, true);
     authStatusAtom(ctx, 'loading');
 
     const storedAccessToken = await authSessionStorage.getAccessToken();
 
     if (!storedAccessToken) {
         resetInMemorySession(ctx);
+        isAuthBootstrapPendingAtom(ctx, false);
         return null;
     }
 
@@ -91,15 +98,18 @@ export const restoreAuthSessionAction = reatomAsync(async (ctx) => {
 
         authUserAtom(ctx, user);
         authStatusAtom(ctx, 'authenticated');
+        isAuthBootstrapPendingAtom(ctx, false);
 
         return user;
     } catch (error) {
         if (isUnauthorizedError(error)) {
             await clearPersistedSession(ctx);
+            isAuthBootstrapPendingAtom(ctx, false);
             return null;
         }
 
         resetInMemorySession(ctx);
+        isAuthBootstrapPendingAtom(ctx, false);
         showErrorToast(getSessionRestoreErrorMessage(error), 'Сессия не восстановлена');
 
         return null;

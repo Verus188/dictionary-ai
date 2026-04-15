@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect } from 'react';
 import { reatomComponent } from '@reatom/npm-react';
 import { useRouter, useSegments } from 'expo-router';
-import { authStatusAtom } from '@/src/features/auth/model/atoms';
+import { authStatusAtom, isAuthBootstrapPendingAtom } from '@/src/features/auth/model/atoms';
 import { AuthLoadingScreen } from '@/src/features/auth/ui/parts/AuthLoadingScreen';
 
 const AUTH_ROUTES = new Set(['login', 'register']);
@@ -10,6 +10,7 @@ const GUEST_HOME_ROUTE = '/login' as const;
 
 export const AuthGate = reatomComponent<PropsWithChildren>(({ children, ctx }) => {
     const authStatus = ctx.spy(authStatusAtom);
+    const isAuthBootstrapPending = ctx.spy(isAuthBootstrapPendingAtom);
     const router = useRouter();
     const segments = useSegments();
     const currentSegment = segments[0];
@@ -34,7 +35,7 @@ export const AuthGate = reatomComponent<PropsWithChildren>(({ children, ctx }) =
         router.replace(redirectTo);
     }, [redirectTo, router]);
 
-    if (authStatus === 'idle' || redirectTo) {
+    if (isAuthBootstrapPending || authStatus === 'idle' || redirectTo) {
         return <AuthLoadingScreen />;
     }
 
