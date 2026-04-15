@@ -7,6 +7,7 @@ import { AuthGate } from '@/src/features/auth/ui/AuthGate';
 import { initializeApp } from './initialize-app';
 import { getUserDatabaseName } from './get-user-database-name';
 import { resetUserScopedState } from './reset-user-scoped-state';
+import { SyncBootstrap } from './SyncBootstrap';
 
 const RootStack = () => (
     <Stack>
@@ -50,6 +51,7 @@ export const UserScopedApp = reatomComponent(({ ctx }) => {
             onInit={initializeApp}
             options={{ useNewConnection: false }}
         >
+            <SyncBootstrap />
             {appContent}
         </SQLiteProvider>
     );

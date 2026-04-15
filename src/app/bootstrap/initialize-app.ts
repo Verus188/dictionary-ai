@@ -6,9 +6,6 @@ import { initializeDatabase } from '@/src/shared/db/bootstrap';
 
 export const initializeApp = async (db: SQLiteDatabase) => {
     await initializeDatabase(db);
-
-    await Promise.all([
-        hydrateSettingsAction(reatomCtx, db),
-        hydrateDictionaryCardsAction(reatomCtx, db),
-    ]);
+    await hydrateSettingsAction(reatomCtx, db);
+    await hydrateDictionaryCardsAction(reatomCtx, db);
 };

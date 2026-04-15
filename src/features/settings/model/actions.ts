@@ -1,8 +1,16 @@
 import { reatomAsync } from '@reatom/async';
 import { AtomMut } from '@reatom/core';
 import { SQLiteDatabase } from 'expo-sqlite';
+import { generateId } from '@/src/shared/lib/generate-id';
 import { settingsRepository } from '@/src/shared/db/repositories/settings-repository';
-import { defaultPersistedStorySettings, persistedStorySettingKeys } from './constants';
+import { enqueueSyncOperation } from '@/src/shared/sync/model/enqueue-sync-operation';
+import { scheduleSync } from '@/src/shared/sync/model/sync-scheduler';
+import { PersistedStorySettingKey } from '@/src/shared/types/settings';
+import {
+    defaultPersistedStorySettings,
+    defaultStorySettingsState,
+    persistedStorySettingKeys,
+} from './constants';
 import { storySettingsAtoms } from './atoms';
 
 export const hydrateSettingsAction = reatomAsync(async (ctx, db: SQLiteDatabase) => {
@@ -14,6 +22,10 @@ export const hydrateSettingsAction = reatomAsync(async (ctx, db: SQLiteDatabase)
         educationLanguageAtom,
         chunkLengthAtom,
     } = storySettingsAtoms;
+
+    educationLanguageAtom(ctx, defaultStorySettingsState.educationLanguage);
+    chunkLengthAtom(ctx, defaultStorySettingsState.chunkLength);
+    storyLanguageDifficultyAtom(ctx, defaultStorySettingsState.storyLanguageDifficulty);
 
     const savedEducationLanguage = settings.educationLanguage ?? settings.educationlanguage;
     if (savedEducationLanguage !== undefined && savedEducationLanguage !== null) {
@@ -41,11 +53,28 @@ export const updatePersistedSettingAction = reatomAsync(
         ctx,
         db: SQLiteDatabase,
         settingAtom: AtomMut<string>,
-        setting: string,
+        setting: PersistedStorySettingKey,
         value: string,
     ) => {
-        await settingsRepository.update(db, setting, value);
+        const didUpdate = await settingsRepository.update(db, setting, value);
         settingAtom(ctx, value);
+
+        if (!didUpdate) {
+            return;
+        }
+
+        await enqueueSyncOperation(db, {
+            clientUpdatedAt: new Date().toISOString(),
+            entityId: setting,
+            entityType: 'setting',
+            operationId: generateId(),
+            operationType: 'upsert',
+            payload: {
+                key: setting,
+                value,
+            },
+        });
+        scheduleSync();
     },
     'updatePersistedSetting',
 );

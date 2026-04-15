@@ -1,8 +1,5 @@
-export const persistedStorySettingKeys = {
-    chunkLength: 'storyContinuationLength',
-    educationLanguage: 'educationLanguage',
-    storyLanguageDifficulty: 'storyLanguageDifficulty',
-} as const;
+import { persistedStorySettingKeys } from '@/src/shared/types/settings';
+export { persistedStorySettingKeys } from '@/src/shared/types/settings';
 
 export const defaultStorySettingsState = {
     chunkLength: '800',
