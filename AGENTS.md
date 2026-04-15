@@ -23,6 +23,8 @@ Architecture rules:
 - Feature modules may depend on `shared/*`, but should not depend on other features unless the dependency is explicitly intentional and minimal.
 - Shared modules must not import from `features/*` or `app/*`.
 - Persistence and API code must not import from UI or route modules.
+- Treat `useEffect` as a UI-only tool. It may be used for visual concerns such as animations, focus management, or DOM-only presentation tweaks, but not for business workflows, app bootstrap, synchronization orchestration, navigation decisions, or persistence side effects.
+- Prefer Reatom primitives for non-visual side effects: `reatomResource`, `atom.onChange`, `action.onCall`, `onConnect`, and other model-layer reactive hooks should own application logic that would otherwise be placed in `useEffect`.
 - In a feature `ui/` folder, keep the main screen or entry component at the top level. If the feature has additional UI pieces, place them in `ui/parts/`.
 - Reatom atoms/actions should live inside the feature they belong to instead of a single global `src/model` module.
 - Toasts, alerts, and other UI side effects should be triggered from presentation/feature boundaries, not from low-level API or DB helpers.
