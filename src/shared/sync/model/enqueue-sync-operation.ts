@@ -1,16 +1,15 @@
-import { SQLiteDatabase } from 'expo-sqlite';
 import { generateId } from '@/src/shared/lib/generate-id';
-import { syncOutboxRepository } from '@/src/shared/sync/db/outbox-repository';
+import { AppStorage } from '@/src/shared/storage/types';
 import { getStableDeviceId } from '@/src/shared/sync/lib/device-id-storage';
 import { PushSyncRequestOperation } from '@/src/shared/sync/types';
 
 export const enqueueSyncOperation = async (
-    db: SQLiteDatabase,
+    storage: AppStorage,
     operation: PushSyncRequestOperation,
 ) => {
     const deviceId = await getStableDeviceId();
 
-    await syncOutboxRepository.insertOperation(db, {
+    await storage.syncOutbox.insertOperation({
         ...operation,
         createdAt: operation.clientUpdatedAt,
         deviceId,

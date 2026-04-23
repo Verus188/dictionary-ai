@@ -1,11 +1,10 @@
-import { SQLiteDatabase } from 'expo-sqlite';
 import { hydrateDictionaryCardsAction } from '@/src/features/dictionary/model/actions';
 import { hydrateSettingsAction } from '@/src/features/settings/model/actions';
 import { reatomCtx } from '@/src/app/providers/reatom';
-import { initializeDatabase } from '@/src/shared/db/bootstrap';
+import { AppStorage } from '@/src/shared/storage/types';
 
-export const initializeApp = async (db: SQLiteDatabase) => {
-    await initializeDatabase(db);
-    await hydrateSettingsAction(reatomCtx, db);
-    await hydrateDictionaryCardsAction(reatomCtx, db);
+export const initializeApp = async (storage: AppStorage) => {
+    await storage.initialize();
+    await hydrateSettingsAction(reatomCtx, storage);
+    await hydrateDictionaryCardsAction(reatomCtx, storage);
 };

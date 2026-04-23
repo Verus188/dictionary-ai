@@ -1,10 +1,10 @@
 import { reatomComponent } from '@reatom/npm-react';
-import { useSQLiteContext } from 'expo-sqlite';
 import { FC } from 'react';
 import { Alert, Platform, View, ViewProps } from 'react-native';
 import { twMerge } from 'tailwind-merge';
 import { deleteDictionaryCardAction } from '@/src/features/dictionary/model/actions';
 import { dictionaryCardsAtom } from '@/src/features/dictionary/model/atoms';
+import { useAppStorage } from '@/src/shared/storage/context';
 import { DictionaryCard } from './DictionaryCard';
 
 type DictionaryCardsListProps = ViewProps & {
@@ -13,7 +13,7 @@ type DictionaryCardsListProps = ViewProps & {
 
 export const DictionaryCardsList: FC<DictionaryCardsListProps> = reatomComponent(
     ({ ctx, className, ...rest }) => {
-        const db = useSQLiteContext();
+        const storage = useAppStorage();
         const cardsList = ctx.spy(dictionaryCardsAtom);
 
         return (
@@ -32,7 +32,7 @@ export const DictionaryCardsList: FC<DictionaryCardsListProps> = reatomComponent
                                     return;
                                 }
 
-                                deleteDictionaryCardAction(ctx, db, id);
+                                deleteDictionaryCardAction(ctx, storage, id);
                                 return;
                             }
 
@@ -47,7 +47,7 @@ export const DictionaryCardsList: FC<DictionaryCardsListProps> = reatomComponent
                                     {
                                         text: 'Delete',
                                         onPress: () => {
-                                            deleteDictionaryCardAction(ctx, db, id);
+                                            deleteDictionaryCardAction(ctx, storage, id);
                                         },
                                         style: 'destructive',
                                     },

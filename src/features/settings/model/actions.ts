@@ -1,8 +1,7 @@
 import { reatomAsync } from '@reatom/async';
 import { AtomMut } from '@reatom/core';
-import { SQLiteDatabase } from 'expo-sqlite';
 import { generateId } from '@/src/shared/lib/generate-id';
-import { settingsRepository } from '@/src/shared/db/repositories/settings-repository';
+import { AppStorage } from '@/src/shared/storage/types';
 import { enqueueSyncOperation } from '@/src/shared/sync/model/enqueue-sync-operation';
 import { scheduleSync } from '@/src/shared/sync/model/sync-scheduler';
 import { PersistedStorySettingKey } from '@/src/shared/types/settings';
@@ -13,10 +12,10 @@ import {
 } from './constants';
 import { storySettingsAtoms } from './atoms';
 
-export const hydrateSettingsAction = reatomAsync(async (ctx, db: SQLiteDatabase) => {
-    await settingsRepository.ensureDefaults(db, defaultPersistedStorySettings);
+export const hydrateSettingsAction = reatomAsync(async (ctx, storage: AppStorage) => {
+    await storage.settings.ensureDefaults(defaultPersistedStorySettings);
 
-    const settings = await settingsRepository.getAll(db);
+    const settings = await storage.settings.getAll();
     const {
         storyLanguageDifficultyAtom,
         educationLanguageAtom,
@@ -51,19 +50,19 @@ export const hydrateSettingsAction = reatomAsync(async (ctx, db: SQLiteDatabase)
 export const updatePersistedSettingAction = reatomAsync(
     async (
         ctx,
-        db: SQLiteDatabase,
+        storage: AppStorage,
         settingAtom: AtomMut<string>,
         setting: PersistedStorySettingKey,
         value: string,
     ) => {
-        const didUpdate = await settingsRepository.update(db, setting, value);
+        const didUpdate = await storage.settings.update(setting, value);
         settingAtom(ctx, value);
 
         if (!didUpdate) {
             return;
         }
 
-        await enqueueSyncOperation(db, {
+        await enqueueSyncOperation(storage, {
             clientUpdatedAt: new Date().toISOString(),
             entityId: setting,
             entityType: 'setting',

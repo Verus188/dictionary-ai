@@ -1,11 +1,7 @@
-import { SQLiteDatabase } from 'expo-sqlite';
-import { dictionaryCardsRepository } from '@/src/shared/db/repositories/dictionary-cards-repository';
-import { settingsRepository } from '@/src/shared/db/repositories/settings-repository';
 import { pushSync, pullSync } from '@/src/shared/sync/api/client';
-import { syncOutboxRepository } from '@/src/shared/sync/db/outbox-repository';
-import { syncStateRepository } from '@/src/shared/sync/db/sync-state-repository';
 import { getStableDeviceId } from '@/src/shared/sync/lib/device-id-storage';
 import { seedPendingSyncOperations } from '@/src/shared/sync/model/seed-pending-sync-operations';
+import { AppStorage } from '@/src/shared/storage/types';
 import { PersistedStorySettingKey } from '@/src/shared/types/settings';
 import {
     DictionaryCardSyncEntity,
@@ -36,7 +32,7 @@ const toPushOperation = (operation: PendingSyncOperation): PushSyncRequestOperat
 });
 
 const settlePushConflicts = async (
-    db: SQLiteDatabase,
+    storage: AppStorage,
     conflicts: PushSyncConflict[],
 ): Promise<boolean> => {
     let didChangeLocalData = false;
@@ -47,15 +43,15 @@ const settlePushConflicts = async (
         }
 
         didChangeLocalData = true;
-        await dictionaryCardsRepository.hardDeleteLocal(db, conflict.submittedEntityId);
-        await dictionaryCardsRepository.applyRemoteEntity(db, conflict.canonicalEntity);
+        await storage.dictionaryCards.hardDeleteLocal(conflict.submittedEntityId);
+        await storage.dictionaryCards.applyRemoteEntity(conflict.canonicalEntity);
     }
 
     return didChangeLocalData;
 };
 
 const settlePushResults = async (
-    db: SQLiteDatabase,
+    storage: AppStorage,
     operations: PendingSyncOperation[],
     conflicts: PushSyncConflict[],
     results: Array<{
@@ -80,34 +76,29 @@ const settlePushResults = async (
         }
 
         if (result.entityType === 'dictionaryCard') {
-            await dictionaryCardsRepository.markSyncSettled(
-                db,
-                result.entityId,
-                result.serverRevision,
-            );
+            await storage.dictionaryCards.markSyncSettled(result.entityId, result.serverRevision);
             continue;
         }
 
-        await settingsRepository.markSyncSettled(
-            db,
+        await storage.settings.markSyncSettled(
             result.entityId as PersistedStorySettingKey,
             result.serverRevision,
         );
     }
 };
 
-const pushOutbox = async (db: SQLiteDatabase, deviceId: string): Promise<boolean> => {
+const pushOutbox = async (storage: AppStorage, deviceId: string): Promise<boolean> => {
     let didChangeLocalData = false;
 
     while (true) {
-        const batch = await syncOutboxRepository.getNextBatch(db, PUSH_BATCH_LIMIT);
+        const batch = await storage.syncOutbox.getNextBatch(PUSH_BATCH_LIMIT);
 
         if (batch.length === 0) {
             return didChangeLocalData;
         }
 
         const operationIds = batch.map((item) => item.operationId);
-        await syncOutboxRepository.markBatchInFlight(db, operationIds);
+        await storage.syncOutbox.markBatchInFlight(operationIds);
 
         try {
             const response = await pushSync({
@@ -115,37 +106,34 @@ const pushOutbox = async (db: SQLiteDatabase, deviceId: string): Promise<boolean
                 operations: batch.map(toPushOperation),
             });
 
-            const changedByConflicts = await settlePushConflicts(db, response.conflicts);
-            await settlePushResults(db, batch, response.conflicts, response.results);
+            const changedByConflicts = await settlePushConflicts(storage, response.conflicts);
+            await settlePushResults(storage, batch, response.conflicts, response.results);
 
-            await syncOutboxRepository.deleteByOperationIds(db, [
+            await storage.syncOutbox.deleteByOperationIds([
                 ...response.results.map((item) => item.operationId),
                 ...response.conflicts.map((item) => item.operationId),
             ]);
 
             didChangeLocalData = didChangeLocalData || changedByConflicts;
         } catch (error) {
-            await syncOutboxRepository.markBatchFailed(db, operationIds);
+            await storage.syncOutbox.markBatchFailed(operationIds);
             throw error;
         }
     }
 };
 
-const applyPullChange = async (db: SQLiteDatabase, change: PullSyncChange) => {
+const applyPullChange = async (storage: AppStorage, change: PullSyncChange) => {
     if (change.entityType === 'dictionaryCard') {
-        await dictionaryCardsRepository.applyRemoteEntity(
-            db,
-            change.entity as DictionaryCardSyncEntity,
-        );
+        await storage.dictionaryCards.applyRemoteEntity(change.entity as DictionaryCardSyncEntity);
         return;
     }
 
-    await settingsRepository.applyRemoteEntity(db, change.entity as SettingSyncEntity);
+    await storage.settings.applyRemoteEntity(change.entity as SettingSyncEntity);
 };
 
-const pullRemoteChanges = async (db: SQLiteDatabase): Promise<boolean> => {
+const pullRemoteChanges = async (storage: AppStorage): Promise<boolean> => {
     let didChangeLocalData = false;
-    let cursor = await syncStateRepository.getLastSyncCursor(db);
+    let cursor = await storage.syncState.getLastSyncCursor();
 
     while (true) {
         const response = await pullSync(cursor);
@@ -153,15 +141,15 @@ const pullRemoteChanges = async (db: SQLiteDatabase): Promise<boolean> => {
         if (response.changes.length > 0) {
             didChangeLocalData = true;
 
-            await db.withTransactionAsync(async () => {
+            await storage.withTransaction(async () => {
                 for (const change of response.changes) {
-                    await applyPullChange(db, change);
+                    await applyPullChange(storage, change);
                 }
 
-                await syncStateRepository.setLastSyncCursor(db, response.cursor);
+                await storage.syncState.setLastSyncCursor(response.cursor);
             });
         } else if (response.cursor !== cursor && response.cursor > 0) {
-            await syncStateRepository.setLastSyncCursor(db, response.cursor);
+            await storage.syncState.setLastSyncCursor(response.cursor);
         }
 
         cursor = response.cursor;
@@ -172,16 +160,16 @@ const pullRemoteChanges = async (db: SQLiteDatabase): Promise<boolean> => {
     }
 };
 
-export const runSync = async (db: SQLiteDatabase): Promise<{ didChangeLocalData: boolean }> => {
+export const runSync = async (storage: AppStorage): Promise<{ didChangeLocalData: boolean }> => {
     const deviceId = await getStableDeviceId();
 
-    await syncStateRepository.markSyncStarted(db);
-    await seedPendingSyncOperations(db, deviceId);
+    await storage.syncState.markSyncStarted();
+    await seedPendingSyncOperations(storage, deviceId);
 
-    const didChangeLocalDataFromPush = await pushOutbox(db, deviceId);
-    const didChangeLocalDataFromPull = await pullRemoteChanges(db);
+    const didChangeLocalDataFromPush = await pushOutbox(storage, deviceId);
+    const didChangeLocalDataFromPull = await pullRemoteChanges(storage);
 
-    await syncStateRepository.markSyncCompleted(db);
+    await storage.syncState.markSyncCompleted();
 
     return {
         didChangeLocalData: didChangeLocalDataFromPush || didChangeLocalDataFromPull,

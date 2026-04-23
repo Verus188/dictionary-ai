@@ -1,21 +1,22 @@
 import { Picker } from '@react-native-picker/picker';
 import { reatomComponent } from '@reatom/npm-react';
 import { Checkbox } from 'expo-checkbox';
-import { useSQLiteContext } from 'expo-sqlite';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { authStatusAtom } from '@/src/features/auth/model/atoms';
 import { initStoryAction } from '@/src/features/story/model/actions';
 import { storyTagsAtoms, storySettingsAtoms } from '@/src/features/settings/model/atoms';
 import { persistedStorySettingKeys } from '@/src/features/settings/model/constants';
 import { updatePersistedSettingAction } from '@/src/features/settings/model/actions';
 import storyTagsJson from '@/src/data/story-tags.json';
+import { useAppStorage } from '@/src/shared/storage/context';
 import { getColor } from '@/src/shared/theme/getColor';
 import { StoryTagsCatalog } from '@/src/shared/types/story';
 import { Button } from '@/src/shared/ui/Button';
 import { isInitStoryLoadingAtom } from '@/src/features/story/model/atoms';
 
-export const StorySettingsScreen = reatomComponent(({ ctx }) => {
-    const db = useSQLiteContext();
+const StorySettingsScreenContent = reatomComponent(({ ctx }) => {
+    const storage = useAppStorage();
     const {
         storyPromptAtom,
         chunkLengthAtom,
@@ -49,7 +50,7 @@ export const StorySettingsScreen = reatomComponent(({ ctx }) => {
                                         onValueChange={(value) => {
                                             updatePersistedSettingAction(
                                                 ctx,
-                                                db,
+                                                storage,
                                                 chunkLengthAtom,
                                                 persistedStorySettingKeys.chunkLength,
                                                 value,
@@ -76,7 +77,7 @@ export const StorySettingsScreen = reatomComponent(({ ctx }) => {
                                         onValueChange={(value) => {
                                             updatePersistedSettingAction(
                                                 ctx,
-                                                db,
+                                                storage,
                                                 educationLanguageAtom,
                                                 persistedStorySettingKeys.educationLanguage,
                                                 value,
@@ -115,7 +116,7 @@ export const StorySettingsScreen = reatomComponent(({ ctx }) => {
                                         onValueChange={(value) => {
                                             updatePersistedSettingAction(
                                                 ctx,
-                                                db,
+                                                storage,
                                                 storyLanguageDifficultyAtom,
                                                 persistedStorySettingKeys.storyLanguageDifficulty,
                                                 value,
@@ -331,4 +332,14 @@ export const StorySettingsScreen = reatomComponent(({ ctx }) => {
             </ScrollView>
         </View>
     );
+});
+
+export const StorySettingsScreen = reatomComponent(({ ctx }) => {
+    const isAuthenticated = ctx.spy(authStatusAtom) === 'authenticated';
+
+    if (!isAuthenticated) {
+        return null;
+    }
+
+    return <StorySettingsScreenContent />;
 });

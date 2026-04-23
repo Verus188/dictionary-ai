@@ -1,8 +1,5 @@
-import { SQLiteDatabase } from 'expo-sqlite';
-import { dictionaryCardsRepository } from '@/src/shared/db/repositories/dictionary-cards-repository';
-import { settingsRepository } from '@/src/shared/db/repositories/settings-repository';
 import { generateId } from '@/src/shared/lib/generate-id';
-import { syncOutboxRepository } from '@/src/shared/sync/db/outbox-repository';
+import { AppStorage } from '@/src/shared/storage/types';
 import { PushSyncRequestOperation } from '@/src/shared/sync/types';
 
 const createOperationRecord = (
@@ -21,12 +18,11 @@ const createOperationRecord = (
     payload: operation.payload === null ? null : JSON.stringify(operation.payload),
 });
 
-export const seedPendingSyncOperations = async (db: SQLiteDatabase, deviceId: string) => {
-    const pendingCards = await dictionaryCardsRepository.getPendingSyncCandidates(db);
+export const seedPendingSyncOperations = async (storage: AppStorage, deviceId: string) => {
+    const pendingCards = await storage.dictionaryCards.getPendingSyncCandidates();
 
     for (const card of pendingCards) {
-        const hasOutboxOperation = await syncOutboxRepository.hasUnsettledOperationForEntity(
-            db,
+        const hasOutboxOperation = await storage.syncOutbox.hasUnsettledOperationForEntity(
             'dictionaryCard',
             card.id,
         );
@@ -35,8 +31,7 @@ export const seedPendingSyncOperations = async (db: SQLiteDatabase, deviceId: st
             continue;
         }
 
-        await syncOutboxRepository.insertOperation(
-            db,
+        await storage.syncOutbox.insertOperation(
             createOperationRecord(deviceId, {
                 clientUpdatedAt: card.updatedAt ?? new Date().toISOString(),
                 entityId: card.id,
@@ -53,11 +48,10 @@ export const seedPendingSyncOperations = async (db: SQLiteDatabase, deviceId: st
         );
     }
 
-    const pendingSettings = await settingsRepository.getPendingSyncCandidates(db);
+    const pendingSettings = await storage.settings.getPendingSyncCandidates();
 
     for (const setting of pendingSettings) {
-        const hasOutboxOperation = await syncOutboxRepository.hasUnsettledOperationForEntity(
-            db,
+        const hasOutboxOperation = await storage.syncOutbox.hasUnsettledOperationForEntity(
             'setting',
             setting.setting,
         );
@@ -66,8 +60,7 @@ export const seedPendingSyncOperations = async (db: SQLiteDatabase, deviceId: st
             continue;
         }
 
-        await syncOutboxRepository.insertOperation(
-            db,
+        await storage.syncOutbox.insertOperation(
             createOperationRecord(deviceId, {
                 clientUpdatedAt: setting.updatedAt,
                 entityId: setting.setting,
