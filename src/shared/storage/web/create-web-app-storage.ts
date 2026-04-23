@@ -1,3 +1,4 @@
+import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { generateId } from '@/src/shared/lib/generate-id';
 import {
     DictionaryCardSyncEntity,
@@ -27,7 +28,14 @@ const STORE_NAMES = {
 type DictionaryCardRecord = Required<
     Pick<
         DictionaryCard,
-        'card' | 'createdAt' | 'deletedAt' | 'id' | 'normalizedCard' | 'serverRevision' | 'syncStatus' | 'updatedAt'
+        | 'card'
+        | 'createdAt'
+        | 'deletedAt'
+        | 'id'
+        | 'normalizedCard'
+        | 'serverRevision'
+        | 'syncStatus'
+        | 'updatedAt'
     >
 >;
 
@@ -40,47 +48,40 @@ type SyncStateRecord = {
     value: string | null;
 };
 
+interface AppWebStorageSchema extends DBSchema {
+    dictionaryCards: {
+        key: string;
+        value: DictionaryCardRecord;
+        indexes: {
+            normalizedCard: string;
+        };
+    };
+    settings: {
+        key: PersistedStorySettingKey;
+        value: SettingRecord;
+    };
+    syncOutbox: {
+        key: string;
+        value: SyncOutboxRecord;
+        indexes: {
+            operationId: string;
+        };
+    };
+    syncState: {
+        key: string;
+        value: SyncStateRecord;
+    };
+}
+
 const DEFAULT_SYNC_STATUS: SyncStatus = 'pending';
 
 const normalizeDictionaryCard = (card: string) => card.trim().replace(/\s+/g, ' ').toLowerCase();
 
 const getCurrentTimestamp = () => new Date().toISOString();
 
-const toError = (error: unknown, fallbackMessage: string) => {
-    if (error instanceof Error) {
-        return error;
-    }
-
-    return new Error(fallbackMessage);
-};
-
-const requestToPromise = <T>(request: IDBRequest<T>) =>
-    new Promise<T>((resolve, reject) => {
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(toError(request.error, 'IndexedDB request failed'));
-    });
-
-const transactionDone = (transaction: IDBTransaction) =>
-    new Promise<void>((resolve, reject) => {
-        transaction.oncomplete = () => resolve();
-        transaction.onerror = () =>
-            reject(toError(transaction.error, 'IndexedDB transaction failed'));
-        transaction.onabort = () =>
-            reject(toError(transaction.error, 'IndexedDB transaction aborted'));
-    });
-
 const openIndexedDb = (databaseName: string) =>
-    new Promise<IDBDatabase>((resolve, reject) => {
-        if (typeof indexedDB === 'undefined') {
-            reject(new Error('IndexedDB is unavailable in the current environment'));
-            return;
-        }
-
-        const request = indexedDB.open(databaseName, DATABASE_VERSION);
-
-        request.onupgradeneeded = () => {
-            const database = request.result;
-
+    openDB<AppWebStorageSchema>(databaseName, DATABASE_VERSION, {
+        upgrade(database) {
             if (!database.objectStoreNames.contains(STORE_NAMES.settings)) {
                 database.createObjectStore(STORE_NAMES.settings, { keyPath: 'setting' });
             }
@@ -102,71 +103,29 @@ const openIndexedDb = (databaseName: string) =>
             if (!database.objectStoreNames.contains(STORE_NAMES.syncState)) {
                 database.createObjectStore(STORE_NAMES.syncState, { keyPath: 'key' });
             }
-        };
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(toError(request.error, 'Failed to open IndexedDB'));
+        },
     });
 
-const getAllRecords = async <T>(database: IDBDatabase, storeName: string): Promise<T[]> => {
-    const transaction = database.transaction(storeName, 'readonly');
-    const store = transaction.objectStore(storeName);
-    const records = await requestToPromise(store.getAll() as IDBRequest<T[]>);
-    await transactionDone(transaction);
-
-    return records;
-};
-
-const getRecord = async <T>(
-    database: IDBDatabase,
-    storeName: string,
-    key: IDBValidKey,
-): Promise<T | undefined> => {
-    const transaction = database.transaction(storeName, 'readonly');
-    const store = transaction.objectStore(storeName);
-    const record = await requestToPromise(store.get(key) as IDBRequest<T | undefined>);
-    await transactionDone(transaction);
-
-    return record;
-};
-
-const putRecord = async <T>(database: IDBDatabase, storeName: string, value: T): Promise<void> => {
-    const transaction = database.transaction(storeName, 'readwrite');
-    const store = transaction.objectStore(storeName);
-    await requestToPromise(store.put(value));
-    await transactionDone(transaction);
-};
-
-const deleteRecord = async (
-    database: IDBDatabase,
-    storeName: string,
-    key: IDBValidKey,
-): Promise<void> => {
-    const transaction = database.transaction(storeName, 'readwrite');
-    const store = transaction.objectStore(storeName);
-    await requestToPromise(store.delete(key));
-    await transactionDone(transaction);
-};
-
-const resetInFlightOutboxStatuses = async (database: IDBDatabase) => {
-    const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
-    const staleRecords = records.filter((record) => record.status === 'inFlight');
+const resetInFlightOutboxStatuses = async (database: IDBPDatabase<AppWebStorageSchema>) => {
+    const staleRecords = (await database.getAll(STORE_NAMES.syncOutbox)).filter(
+        (record) => record.status === 'inFlight',
+    );
 
     if (staleRecords.length === 0) {
         return;
     }
 
     const transaction = database.transaction(STORE_NAMES.syncOutbox, 'readwrite');
-    const store = transaction.objectStore(STORE_NAMES.syncOutbox);
+    const store = transaction.store;
 
     for (const record of staleRecords) {
-        store.put({
+        await store.put({
             ...record,
             status: 'failed',
         });
     }
 
-    await transactionDone(transaction);
+    await transaction.done;
 };
 
 export const createWebAppStorage = async (databaseName: string): Promise<AppStorage> => {
@@ -189,7 +148,7 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
             applyRemoteEntity: async (entity: DictionaryCardSyncEntity) => {
                 const normalizedCard = normalizeDictionaryCard(entity.card);
 
-                await putRecord<DictionaryCardRecord>(database, STORE_NAMES.dictionaryCards, {
+                await database.put(STORE_NAMES.dictionaryCards, {
                     card: normalizedCard,
                     createdAt: entity.updatedAt,
                     deletedAt: entity.deletedAt,
@@ -207,14 +166,12 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     return null;
                 }
 
-                const existingCards = await getAllRecords<DictionaryCardRecord>(
-                    database,
+                const matchingCards = await database.getAllFromIndex(
                     STORE_NAMES.dictionaryCards,
+                    'normalizedCard',
+                    normalizedCard,
                 );
-                const hasDuplicate = existingCards.some(
-                    (existingCard) =>
-                        existingCard.normalizedCard === normalizedCard && existingCard.deletedAt === null,
-                );
+                const hasDuplicate = matchingCards.some((existingCard) => existingCard.deletedAt === null);
 
                 if (hasDuplicate) {
                     return null;
@@ -232,15 +189,12 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     updatedAt: now,
                 };
 
-                await putRecord(database, STORE_NAMES.dictionaryCards, nextCard);
+                await database.put(STORE_NAMES.dictionaryCards, nextCard);
 
                 return nextCard;
             },
             getAll: async () => {
-                const records = await getAllRecords<DictionaryCardRecord>(
-                    database,
-                    STORE_NAMES.dictionaryCards,
-                );
+                const records = await database.getAll(STORE_NAMES.dictionaryCards);
 
                 return records
                     .filter((record) => record.deletedAt === null)
@@ -251,29 +205,22 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     }));
             },
             getPendingSyncCandidates: async () => {
-                const records = await getAllRecords<DictionaryCardRecord>(
-                    database,
-                    STORE_NAMES.dictionaryCards,
-                );
+                const records = await database.getAll(STORE_NAMES.dictionaryCards);
 
                 return records
                     .filter((record) => record.syncStatus === 'pending')
                     .sort((left, right) => left.updatedAt.localeCompare(right.updatedAt));
             },
-            hardDeleteLocal: (id: string) => deleteRecord(database, STORE_NAMES.dictionaryCards, id),
+            hardDeleteLocal: (id: string) => database.delete(STORE_NAMES.dictionaryCards, id),
             markDeletedLocally: async (id: string) => {
-                const record = await getRecord<DictionaryCardRecord>(
-                    database,
-                    STORE_NAMES.dictionaryCards,
-                    id,
-                );
+                const record = await database.get(STORE_NAMES.dictionaryCards, id);
 
                 if (!record || record.deletedAt !== null) {
                     return false;
                 }
 
                 const now = getCurrentTimestamp();
-                await putRecord(database, STORE_NAMES.dictionaryCards, {
+                await database.put(STORE_NAMES.dictionaryCards, {
                     ...record,
                     deletedAt: now,
                     syncStatus: 'pending',
@@ -283,17 +230,13 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                 return true;
             },
             markSyncSettled: async (id: string, serverRevision?: number) => {
-                const record = await getRecord<DictionaryCardRecord>(
-                    database,
-                    STORE_NAMES.dictionaryCards,
-                    id,
-                );
+                const record = await database.get(STORE_NAMES.dictionaryCards, id);
 
                 if (!record) {
                     return;
                 }
 
-                await putRecord(database, STORE_NAMES.dictionaryCards, {
+                await database.put(STORE_NAMES.dictionaryCards, {
                     ...record,
                     serverRevision: serverRevision ?? record.serverRevision,
                     syncStatus: 'synced',
@@ -302,7 +245,7 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
         },
         settings: {
             applyRemoteEntity: async (entity: SettingSyncEntity) => {
-                await putRecord<SettingRecord>(database, STORE_NAMES.settings, {
+                await database.put(STORE_NAMES.settings, {
                     deletedAt: entity.deletedAt,
                     serverRevision: entity.serverRevision,
                     setting: entity.key,
@@ -312,8 +255,9 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                 });
             },
             ensureDefaults: async (defaults: Record<string, string>) => {
-                const records = await getAllRecords<SettingRecord>(database, STORE_NAMES.settings);
-                const existingKeys = new Set(records.map((record) => record.setting));
+                const existingKeys = new Set(
+                    (await database.getAllKeys(STORE_NAMES.settings)) as PersistedStorySettingKey[],
+                );
                 const now = getCurrentTimestamp();
 
                 for (const [setting, value] of Object.entries(defaults)) {
@@ -321,7 +265,7 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                         continue;
                     }
 
-                    await putRecord<SettingRecord>(database, STORE_NAMES.settings, {
+                    await database.put(STORE_NAMES.settings, {
                         deletedAt: null,
                         serverRevision: null,
                         setting: setting as PersistedStorySettingKey,
@@ -332,7 +276,7 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                 }
             },
             getAll: async () => {
-                const records = await getAllRecords<SettingRecord>(database, STORE_NAMES.settings);
+                const records = await database.getAll(STORE_NAMES.settings);
 
                 return records.reduce<PersistedSettingsRecord>((acc, record) => {
                     if (record.deletedAt === null) {
@@ -343,31 +287,27 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                 }, {});
             },
             getPendingSyncCandidates: async () => {
-                const records = await getAllRecords<SettingRecord>(database, STORE_NAMES.settings);
+                const records = await database.getAll(STORE_NAMES.settings);
 
                 return records
                     .filter((record) => record.syncStatus === 'pending')
                     .sort((left, right) => left.updatedAt.localeCompare(right.updatedAt));
             },
             markSyncSettled: async (setting, serverRevision?: number) => {
-                const record = await getRecord<SettingRecord>(database, STORE_NAMES.settings, setting);
+                const record = await database.get(STORE_NAMES.settings, setting);
 
                 if (!record) {
                     return;
                 }
 
-                await putRecord(database, STORE_NAMES.settings, {
+                await database.put(STORE_NAMES.settings, {
                     ...record,
                     serverRevision: serverRevision ?? record.serverRevision,
                     syncStatus: 'synced',
                 });
             },
             update: async (setting, value) => {
-                const existingRecord = await getRecord<SettingRecord>(
-                    database,
-                    STORE_NAMES.settings,
-                    setting,
-                );
+                const existingRecord = await database.get(STORE_NAMES.settings, setting);
 
                 if (
                     existingRecord &&
@@ -378,7 +318,7 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                 }
 
                 const now = getCurrentTimestamp();
-                await putRecord<SettingRecord>(database, STORE_NAMES.settings, {
+                await database.put(STORE_NAMES.settings, {
                     deletedAt: null,
                     serverRevision: existingRecord?.serverRevision ?? null,
                     setting,
@@ -396,32 +336,33 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     return;
                 }
 
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
-                const matchingIds = new Set(
-                    records
-                        .filter((record) => operationIds.includes(record.operationId))
-                        .map((record) => record.id),
-                );
-
+                const records = await database.getAll(STORE_NAMES.syncOutbox);
                 const transaction = database.transaction(STORE_NAMES.syncOutbox, 'readwrite');
-                const store = transaction.objectStore(STORE_NAMES.syncOutbox);
+                const store = transaction.store;
 
-                for (const id of matchingIds) {
-                    store.delete(id);
+                for (const record of records) {
+                    if (!operationIds.includes(record.operationId)) {
+                        continue;
+                    }
+
+                    await store.delete(record.id);
                 }
 
-                await transactionDone(transaction);
+                await transaction.done;
             },
             getNextBatch: async (limit: number) => {
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
+                const records = await database.getAll(STORE_NAMES.syncOutbox);
 
                 return records
                     .filter((record) => record.status === 'pending' || record.status === 'failed')
                     .sort((left, right) => left.createdAt.localeCompare(right.createdAt))
                     .slice(0, limit);
             },
-            hasUnsettledOperationForEntity: async (entityType: SyncEntityType, entityId: string) => {
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
+            hasUnsettledOperationForEntity: async (
+                entityType: SyncEntityType,
+                entityId: string,
+            ) => {
+                const records = await database.getAll(STORE_NAMES.syncOutbox);
 
                 return records.some(
                     (record) => record.entityType === entityType && record.entityId === entityId,
@@ -435,16 +376,17 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     payload: string | null;
                 },
             ) => {
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
-                const hasDuplicate = records.some(
-                    (record) => record.operationId === operation.operationId,
+                const existingRecord = await database.getFromIndex(
+                    STORE_NAMES.syncOutbox,
+                    'operationId',
+                    operation.operationId,
                 );
 
-                if (hasDuplicate) {
+                if (existingRecord) {
                     return;
                 }
 
-                await putRecord<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox, {
+                await database.put(STORE_NAMES.syncOutbox, {
                     clientUpdatedAt: operation.clientUpdatedAt,
                     createdAt: operation.createdAt,
                     deviceId: operation.deviceId,
@@ -464,41 +406,39 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     return;
                 }
 
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
-
+                const records = await database.getAll(STORE_NAMES.syncOutbox);
                 const transaction = database.transaction(STORE_NAMES.syncOutbox, 'readwrite');
-                const store = transaction.objectStore(STORE_NAMES.syncOutbox);
+                const store = transaction.store;
 
                 for (const record of records) {
                     if (!operationIds.includes(record.operationId)) {
                         continue;
                     }
 
-                    store.put({
+                    await store.put({
                         ...record,
                         status: 'failed',
                     });
                 }
 
-                await transactionDone(transaction);
+                await transaction.done;
             },
             markBatchInFlight: async (operationIds: string[]) => {
                 if (operationIds.length === 0) {
                     return;
                 }
 
-                const records = await getAllRecords<SyncOutboxRecord>(database, STORE_NAMES.syncOutbox);
+                const records = await database.getAll(STORE_NAMES.syncOutbox);
                 const now = getCurrentTimestamp();
-
                 const transaction = database.transaction(STORE_NAMES.syncOutbox, 'readwrite');
-                const store = transaction.objectStore(STORE_NAMES.syncOutbox);
+                const store = transaction.store;
 
                 for (const record of records) {
                     if (!operationIds.includes(record.operationId)) {
                         continue;
                     }
 
-                    store.put({
+                    await store.put({
                         ...record,
                         lastAttemptAt: now,
                         retryCount: record.retryCount + 1,
@@ -506,16 +446,12 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
                     });
                 }
 
-                await transactionDone(transaction);
+                await transaction.done;
             },
         },
         syncState: {
             getLastSyncCursor: async () => {
-                const record = await getRecord<SyncStateRecord>(
-                    database,
-                    STORE_NAMES.syncState,
-                    'lastSyncCursor',
-                );
+                const record = await database.get(STORE_NAMES.syncState, 'lastSyncCursor');
 
                 if (!record?.value) {
                     return null;
@@ -525,21 +461,24 @@ export const createWebAppStorage = async (databaseName: string): Promise<AppStor
 
                 return Number.isFinite(parsed) ? parsed : null;
             },
-            markSyncCompleted: () =>
-                putRecord<SyncStateRecord>(database, STORE_NAMES.syncState, {
+            markSyncCompleted: async () => {
+                await database.put(STORE_NAMES.syncState, {
                     key: 'lastSyncCompletedAt',
                     value: getCurrentTimestamp(),
-                }),
-            markSyncStarted: () =>
-                putRecord<SyncStateRecord>(database, STORE_NAMES.syncState, {
+                });
+            },
+            markSyncStarted: async () => {
+                await database.put(STORE_NAMES.syncState, {
                     key: 'lastSyncStartedAt',
                     value: getCurrentTimestamp(),
-                }),
-            setLastSyncCursor: (cursor: number) =>
-                putRecord<SyncStateRecord>(database, STORE_NAMES.syncState, {
+                });
+            },
+            setLastSyncCursor: async (cursor: number) => {
+                await database.put(STORE_NAMES.syncState, {
                     key: 'lastSyncCursor',
                     value: String(cursor),
-                }),
+                });
+            },
         },
     };
 };
