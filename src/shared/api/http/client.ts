@@ -6,7 +6,8 @@ declare module 'axios' {
     }
 }
 
-const DEFAULT_API_BASE_URL = 'http://localhost:3000';
+// const DEFAULT_API_BASE_URL = 'http://localhost:3000';
+const DEFAULT_API_BASE_URL = 'https://dictionary-ai-be.onrender.com';
 const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register'];
 
 const normalizeBaseUrl = (baseUrl: string) => {
